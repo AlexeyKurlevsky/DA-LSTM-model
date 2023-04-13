@@ -7,7 +7,6 @@ from src.window_generator import WindowGenerator
 from src.config import Config
 from src.func import get_data, seed_everything
 
-tf.get_logger().setLevel('ERROR') # Hide warnings
 path = './data_yandex.csv'
 print("==> Load dataset ...")
 df = get_data(path)
