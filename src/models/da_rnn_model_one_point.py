@@ -32,7 +32,7 @@ class DualAttentionRNNModelOnePoint(tf.keras.Model):
         window_size = inputs.shape[1]
         num_features = inputs.shape[2]
 
-        X_encoded = tf.zeros((batch_size, window_size, self.encoder_num_hidden)).numpy()
+        h_encoded = []
 
         for t in range(window_size):
             h_n_exp = tf.expand_dims(h_n, axis=0)
@@ -56,9 +56,11 @@ class DualAttentionRNNModelOnePoint(tf.keras.Model):
             _, finale_state = self.lstm_layer_encoder(x_tilde, states=[h_n, s_n])
             h_n = finale_state[0]
             s_n = finale_state[1]
-            X_encoded[:, t, :] = h_n
+            h_encoded.append(h_n)
+
+        X_encoded = tf.stack(h_encoded)
         # X_encoded: (batch_size, window_size, encoder_num_hidden)
-        return X_encoded
+        return tf.transpose(X_encoded, perm=[1, 0, 2])
 
     def decoder(self, x_encoded, inputs):
         d_n, c_n = _initialize_hidden_state(inputs, self.decoder_num_hidden)
