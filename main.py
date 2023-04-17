@@ -3,7 +3,7 @@ import tensorflow as tf
 from keras.callbacks import EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
 from src.models.da_rnn_model_interval import DualAttentionRNNModelInterval
-from src.window_generator import WindowGenerator
+from src.window_generators.window_generator import WindowGenerator
 from src.config import Config
 from src.func import get_data, seed_everything
 

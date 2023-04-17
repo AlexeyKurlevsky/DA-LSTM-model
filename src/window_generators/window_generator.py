@@ -12,10 +12,6 @@ from typing import Any, Tuple, List
 from sklearn.preprocessing import StandardScaler
 
 
-def create_time_steps(length):
-    return list(range(-length, 0))
-
-
 class WindowGenerator:
     def __init__(self, data: pd.DataFrame, conf: Any, mean_flg: bool = False, scaler: Any = StandardScaler()):
         self.data = data
@@ -111,7 +107,7 @@ class WindowGenerator:
             ax[ind].axvspan(date_val[val + self.conf.window_size],
                             date_val[val + self.conf.window_size + self.conf.n_future], alpha=0.5, color='lightgray')
             mape = mean_absolute_percentage_error(y_val_inv, pred_val_inv) * 100
-            ax[ind].set_title(f'Предсказание модели. МАРЕ={round(mape, 2)}.')
+            ax[ind].set_title(f'Предсказание модели. МАРЕ={round(mape, 2)} %')
             ax[ind].xaxis.set_major_formatter(dates.DateFormatter('%d-%m-%y'))
             ax[ind].tick_params(axis='x', labelrotation=45)
             ax[ind].grid()
@@ -139,7 +135,7 @@ class WindowGenerator:
             ax[ind].axvspan(date_test[val + self.conf.window_size],
                             date_test[val + self.conf.window_size + self.conf.n_future], alpha=0.5, color='lightgray')
             mape = mean_absolute_percentage_error(y_test_inv, pred_test_inv) * 100
-            ax[ind].set_title(f'Предсказание модели. МАРЕ={round(mape, 2)}.')
+            ax[ind].set_title(f'Предсказание модели. МАРЕ={round(mape, 2)} %')
             ax[ind].xaxis.set_major_formatter(dates.DateFormatter('%d-%m-%y'))
             ax[ind].tick_params(axis='x', labelrotation=45)
             ax[ind].grid()
@@ -195,14 +191,14 @@ class WindowGenerator:
         x_val = np.arange(len(val_mape)) + 1
         x_test = np.arange(len(test_mape)) + 1
         ax[0].plot(x_val, val_mape)
-        ax[0].set_title('Validation data')
+        ax[0].set_title('Валидационные данные')
         ax[0].set_xlabel('Номер окна')
-        ax[0].set_ylabel('MAPE')
+        ax[0].set_ylabel('MAPE, %')
         ax[0].grid()
 
         ax[1].plot(x_test, test_mape)
-        ax[1].set_title('Test data')
+        ax[1].set_title('Тестовые данные')
         ax[1].set_xlabel('Номер окна')
-        ax[1].set_ylabel('MAPE')
+        ax[1].set_ylabel('MAPE, %')
         ax[1].grid()
         plt.show()
