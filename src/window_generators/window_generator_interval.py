@@ -204,5 +204,5 @@ class WindowGeneratorOneTarget:
         ax[1].set_xlabel('Номер окна')
         ax[1].set_ylabel('MAPE')
         ax[1].grid()
-        plt.show()
         IPython.display.clear_output()
+        plt.show()
