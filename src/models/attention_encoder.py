@@ -11,13 +11,13 @@ class AttentionEncoder(Layer):
     def build(self, input_shape):
         self.w = self.add_weight(
             name="w_e",
-            shape=(2 * self.encoder_num_hidden, 1),
+            shape=(2*self.encoder_num_hidden, 1),
             initializer="random_normal",
             trainable=True,
         )
         self.u_e = self.add_weight(
             name="u_e",
-            shape=(input_shape[-1] - 2 * self.encoder_num_hidden, 1),
+            shape=(input_shape[-1]-2*self.encoder_num_hidden, 1),
             initializer="random_normal",
             trainable=True
         )
@@ -30,10 +30,10 @@ class AttentionEncoder(Layer):
 
     def call(self, inputs):
         """
-        :param inputs: (batch_size*num_features, 2 * encoder_num_hidden + window_size)
-        :return:  (batch_size*num_features, 1)
+        Args:
+            inputs: (batch_size*num_features, 2 * encoder_num_hidden + window_size)
         """
-        state = inputs[:, :2 * self.encoder_num_hidden]
-        x_k = inputs[:, 2 * self.encoder_num_hidden:]
+        state = inputs[:, :2*self.encoder_num_hidden]
+        x_k = inputs[:, 2*self.encoder_num_hidden:]
         e_k = tf.keras.activations.tanh(tf.matmul(state, self.w) + tf.matmul(x_k, self.u_e))
         return tf.matmul(e_k, self.v_e)

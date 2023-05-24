@@ -4,7 +4,7 @@ import pandas as pd
 
 class Config:
     def __init__(self, data: pd.DataFrame):
-        self.patience = 2
+        self.patience = 10
         self.per_train_split = 0.85
         self.per_val_split = 0.95
         self.window_size_MA = 7
