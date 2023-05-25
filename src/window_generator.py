@@ -42,7 +42,7 @@ class WindowGenerator:
             ax_i.axvline(df_scaled.index[self.conf.val_split], color='b', linestyle='--')
         plt.show()
 
-    def _split_series(self, series) -> List[np.ndarray]:
+    def _split_series(self, series: np.ndarray) -> List[np.ndarray]:
         X, y = list(), list()
         for window_start in range(len(series)):
             past_end = window_start + self.conf.window_size
@@ -150,11 +150,11 @@ class WindowGenerator:
             IPython.display.clear_output()
         return list_metric
 
-    def calc_average_validation_mape(self, model) -> float:
+    def calc_average_validation_mape(self, model: Any) -> float:
         list_metric = self.calc_validation_mape(model)
         return sum(list_metric) / len(list_metric)
 
-    def calc_test_mape(self, model) -> List[float]:
+    def calc_test_mape(self, model: Any) -> List[float]:
         X_train, y_train, X_val, y_val, X_test, y_test = self.get_data_to_model()
         list_num_wind = np.arange(X_test.shape[0])
         list_metric = []
@@ -166,11 +166,11 @@ class WindowGenerator:
             IPython.display.clear_output()
         return list_metric
 
-    def calc_average_test_mape(self, model) -> float:
+    def calc_average_test_mape(self, model: Any) -> float:
         list_metric = self.calc_test_mape(model)
         return sum(list_metric) / len(list_metric)
 
-    def plot_chart_mape_window(self, model) -> None:
+    def plot_chart_mape_window(self, model: Any) -> None:
         fig, ax = plt.subplots(1, 2, figsize=(20, 8))
         ax = ax.ravel()
         val_mape = self.calc_validation_mape(model)
