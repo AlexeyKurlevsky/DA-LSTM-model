@@ -30,8 +30,8 @@ class AttentionEncoder(Layer):
 
     def call(self, inputs):
         """
-        Args:
-            inputs: (batch_size*num_features, 2 * encoder_num_hidden + window_size)
+        :param inputs: (batch_size*num_features, 2 * encoder_num_hidden + window_size)
+        :return (batch_size*num_features, 1)
         """
         state = inputs[:, :2*self.encoder_num_hidden]
         x_k = inputs[:, 2*self.encoder_num_hidden:]
