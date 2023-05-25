@@ -1,0 +1,4 @@
+outs:
+- md5: 0e9cfe7989fec0aad151fcd82116489b
+  size: 64732
+  path: data_yandex.csv
