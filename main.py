@@ -2,10 +2,11 @@ import tensorflow as tf
 
 from keras.callbacks import EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
-from src.models.da_rnn_model_interval import DualAttentionRNNModelInterval
-from src.window_generators.window_generator import WindowGenerator
+
+from src.models.da_rnn_model import DualAttentionRNN
 from src.config import Config
 from src.func import get_data, seed_everything
+from src.window_generator import WindowGenerator
 
 path = './data_yandex.csv'
 print("==> Load dataset ...")
@@ -15,15 +16,15 @@ df_search = df_search.set_index('Дата')
 df_search.dropna(inplace=True)
 conf = Config(df_search)
 seed_everything(conf.seed)
-conf.window_size = 60
+conf.window_size = 90
 conf.patience = 10
 conf.batch_size = 32
-conf.epochs = 2
-print("==> Create windows ...")
-window_generator = WindowGenerator(df_search, mean_flg=True, scaler=MinMaxScaler(), conf=conf)
-X_train, y_train, X_val, y_val, X_test, y_test = window_generator.get_data_to_model()
-train_data_multi, val_data_multi = window_generator.get_tensor_data()
-DA_model = DualAttentionRNNModelInterval(decoder_num_hidden=32, encoder_num_hidden=32, conf=conf)
+conf.n_future = 1
+conf.epochs = 300
+w_all_features = WindowGenerator(df_search, mean_flg=True, scaler=MinMaxScaler(), conf=conf)
+X_train, y_train, X_val, y_val, X_test, y_test = w_all_features.get_data_to_model()
+train_data_multi, val_data_multi = w_all_features.get_tensor_data()
+DA_model = DualAttentionRNN(decoder_num_hidden=64, encoder_num_hidden=64, conf=conf)
 early_stopping = EarlyStopping(monitor='val_loss',
                                patience=conf.patience,
                                mode='min')
@@ -36,17 +37,18 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
     save_best_only=True)
 
 DA_model.compile(optimizer=tf.keras.optimizers.Adam(), loss=conf.loss_func, metrics=conf.metrics)
-print("==> Fit model ...")
-history = DA_model.fit(train_data_multi, epochs=conf.epochs, validation_data=val_data_multi, verbose=1,
-                       callbacks=[early_stopping, model_checkpoint_callback],
-                       steps_per_epoch=conf.steps_per_epoch, validation_steps=conf.validation_steps)
+
+# history = DA_model.fit(train_data_multi, epochs=conf.epochs, validation_data=val_data_multi, verbose=1,
+#                        callbacks=[early_stopping, model_checkpoint_callback],
+#                        steps_per_epoch=conf.steps_per_epoch, validation_steps=conf.validation_steps)
+
 DA_model.load_weights(checkpoint_filepath)
 
-val_mape = window_generator.calc_average_validation_mape(DA_model)
-test_mape = window_generator.calc_average_test_mape(DA_model)
+conf.n_future = 20
+w_one_target = WindowGenerator(df_search, mean_flg=True, scaler=MinMaxScaler(), conf=conf)
 
-print(f'Validation MAPE: {round(val_mape, 2)}')
-print(f'Test MAPE: {round(test_mape, 2)}')
+val_mape = w_one_target.calc_average_validation_mape(DA_model)
+test_mape = w_one_target.calc_average_test_mape(DA_model)
+print(f'Val MAPE {round(val_mape, 2)}; Test MAPE: {round(test_mape, 2)}')
 
-
-window_generator.plot_chart_mape_window(DA_model)
+w_one_target.plot_test_window(DA_model)
