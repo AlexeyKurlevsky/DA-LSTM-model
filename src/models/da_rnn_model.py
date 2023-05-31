@@ -9,8 +9,10 @@ tf.config.run_functions_eagerly(True)
 
 
 def _initialize_hidden_state(inputs, num_hidden):
-    return [tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
-            tf.Variable(tf.zeros((inputs.shape[0], num_hidden)))]
+    return [
+        tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
+        tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
+    ]
 
 
 class DualAttentionRNN(tf.keras.Model):
@@ -22,8 +24,10 @@ class DualAttentionRNN(tf.keras.Model):
         self.lstm_layer_encoder = tf.keras.layers.LSTMCell(self.encoder_num_hidden)
         self.lstm_layer_decoder = tf.keras.layers.LSTMCell(self.decoder_num_hidden)
         self.encoder_attn = AttentionEncoder(encoder_num_hidden=self.encoder_num_hidden)
-        self.decoder_attn = AttentionDecoder(decoder_num_hidden=self.decoder_num_hidden,
-                                             encoder_num_hidden=self.encoder_num_hidden)
+        self.decoder_attn = AttentionDecoder(
+            decoder_num_hidden=self.decoder_num_hidden,
+            encoder_num_hidden=self.encoder_num_hidden,
+        )
         self.fc = Dense(units=self.decoder_num_hidden, activation=None)
         self.fc_final = Dense(units=self.conf.num_features, activation=None)
 
@@ -46,12 +50,16 @@ class DualAttentionRNN(tf.keras.Model):
 
             x_t = tf.transpose(inputs, perm=[0, 2, 1])
 
-            x = tf.concat([h_n_exp, s_n_exp, x_t],
-                          axis=2)  # => (batch_size, num_features, 2 * encoder_num_hidden + window_size)
+            x = tf.concat(
+                [h_n_exp, s_n_exp, x_t], axis=2
+            )  # => (batch_size, num_features, 2 * encoder_num_hidden + window_size)
 
             x = self.encoder_attn(
-                tf.reshape(x, shape=(-1, 2 * self.encoder_num_hidden + window_size)))  # => (batch_size*num_feature, 1)
-            alpha = tf.nn.softmax(tf.reshape(x, shape=(-1, num_features)), axis=1)  # => (batch_size, num_features)
+                tf.reshape(x, shape=(-1, 2 * self.encoder_num_hidden + window_size))
+            )  # => (batch_size*num_feature, 1)
+            alpha = tf.nn.softmax(
+                tf.reshape(x, shape=(-1, num_features)), axis=1
+            )  # => (batch_size, num_features)
             x_tilde = alpha * inputs[:, t, :]  # => (batch_size, num_features)
 
             _, finale_state = self.lstm_layer_encoder(x_tilde, states=[h_n, s_n])
@@ -61,7 +69,9 @@ class DualAttentionRNN(tf.keras.Model):
 
         X_encoded = tf.stack(h_encoded)
         # X_tilde: (batch_size, window_size, num_features)
-        return tf.transpose(X_encoded, perm=[1, 0, 2])  # (batch_size, window_size, encoder_num_hidden)
+        return tf.transpose(
+            X_encoded, perm=[1, 0, 2]
+        )  # (batch_size, window_size, encoder_num_hidden)
 
     def decoder(self, X_encoded, inputs):
         d_n, c_n = _initialize_hidden_state(inputs, self.decoder_num_hidden)
@@ -77,24 +87,35 @@ class DualAttentionRNN(tf.keras.Model):
             c_n_exp = tf.repeat(c_n_exp, repeats=window_size, axis=0)
             c_n_exp = tf.transpose(c_n_exp, perm=[1, 0, 2])
 
-            x = tf.concat(values=[d_n_exp, c_n_exp, X_encoded],
-                          axis=2)  # => (batch_size, window_size, 2 * decoder_num_hidden + encoder_num_hidden)
+            x = tf.concat(
+                values=[d_n_exp, c_n_exp, X_encoded], axis=2
+            )  # => (batch_size, window_size, 2 * decoder_num_hidden + encoder_num_hidden)
 
-            x = self.decoder_attn(tf.reshape(x, shape=(
-                -1, 2 * self.decoder_num_hidden + self.encoder_num_hidden)))  # => (batch_size*window_size, 1)
+            x = self.decoder_attn(
+                tf.reshape(
+                    x, shape=(-1, 2 * self.decoder_num_hidden + self.encoder_num_hidden)
+                )
+            )  # => (batch_size*window_size, 1)
 
-            beta = tf.nn.softmax(tf.reshape(x, shape=(-1, window_size)), axis=1)  # (batch_size, window_size)
+            beta = tf.nn.softmax(
+                tf.reshape(x, shape=(-1, window_size)), axis=1
+            )  # (batch_size, window_size)
             beta = tf.expand_dims(beta, axis=1)  # => (batch_size, 1, window_size)
-            context = tf.matmul(beta, X_encoded)[:, 0, :]  # => (batch_size, encoder_num_hidden)
+            context = tf.matmul(beta, X_encoded)[
+                :, 0, :
+            ]  # => (batch_size, encoder_num_hidden)
 
-            y_tilde = self.fc(tf.concat((context, tf.expand_dims(y_prev[:, t], axis=1)),
-                                        axis=1))  # => (batch_size, encoder_num_hidden)
+            y_tilde = self.fc(
+                tf.concat((context, tf.expand_dims(y_prev[:, t], axis=1)), axis=1)
+            )  # => (batch_size, encoder_num_hidden)
             _, final_states = self.lstm_layer_decoder(y_tilde, states=[d_n, c_n])
 
             d_n = final_states[0]
             c_n = final_states[1]
 
-        y_pred = self.fc_final(tf.concat((d_n, context), axis=1))  # => (batch_size, n_future)
+        y_pred = self.fc_final(
+            tf.concat((d_n, context), axis=1)
+        )  # => (batch_size, n_future)
         return y_pred
 
     def call(self, inputs):
@@ -106,10 +127,12 @@ class DualAttentionRNN(tf.keras.Model):
     def predict_interval(self, inputs, interval):
         pred = self.predict(inputs)
         predictions = pred
-        inputs = np.concatenate([inputs[:, 1:self.conf.window_size, :], pred], axis=1)
+        inputs = np.concatenate([inputs[:, 1 : self.conf.window_size, :], pred], axis=1)
         for i in range(1, interval):
             pred = self.predict(inputs)
             predictions = np.concatenate([predictions, pred], axis=1)
-            inputs = np.concatenate([inputs[:, 1:self.conf.window_size, :], pred], axis=1)
+            inputs = np.concatenate(
+                [inputs[:, 1 : self.conf.window_size, :], pred], axis=1
+            )
 
         return predictions

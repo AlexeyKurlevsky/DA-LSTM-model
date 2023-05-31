@@ -19,7 +19,7 @@ class Config:
         self.val_split = int(self.n_samples * self.per_val_split)
         self.num_features = data.shape[1]
         self.seed = 0
-        self.metrics = ['mean_squared_error']
+        self.metrics = ["mean_squared_error"]
         self.steps_per_epoch = 50
         self.validation_steps = 20
         self.loss_func = tf.keras.losses.MeanSquaredError()
