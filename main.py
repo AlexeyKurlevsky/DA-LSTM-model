@@ -1,4 +1,5 @@
 import tensorflow as tf
+import os
 
 from keras.callbacks import EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
@@ -8,6 +9,8 @@ from src.config import Config
 from src.func import get_data, seed_everything
 from src.window_generator import WindowGenerator
 
+seed_everything()
+os.system('dvc pull')
 path = "./data_yandex.csv"
 print("==> Load dataset ...")
 df = get_data(path)
@@ -15,7 +18,6 @@ df_search = df[["Дата", "Заражений за день", "Day sin", "Day 
 df_search = df_search.set_index("Дата")
 df_search.dropna(inplace=True)
 conf = Config(df_search)
-seed_everything(conf.seed)
 conf.window_size = 90
 conf.patience = 10
 conf.batch_size = 32
