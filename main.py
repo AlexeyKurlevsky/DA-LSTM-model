@@ -10,7 +10,7 @@ from src.func import get_data, seed_everything
 from src.window_generator import WindowGenerator
 
 seed_everything()
-os.system('dvc pull')
+os.system("dvc pull")
 path = "./data_yandex.csv"
 print("==> Load dataset ...")
 df = get_data(path)
