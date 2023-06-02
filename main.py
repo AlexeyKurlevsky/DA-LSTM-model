@@ -41,9 +41,15 @@ model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
 
 DA_model.compile(optimizer=tf.keras.optimizers.Adam(), loss=conf.loss_func)
 
-history = DA_model.fit(train_data_multi, epochs=conf.epochs, validation_data=val_data_multi, verbose=1,
-                       callbacks=[early_stopping, model_checkpoint_callback],
-                       steps_per_epoch=conf.steps_per_epoch, validation_steps=conf.validation_steps)
+history = DA_model.fit(
+    train_data_multi,
+    epochs=conf.epochs,
+    validation_data=val_data_multi,
+    verbose=1,
+    callbacks=[early_stopping, model_checkpoint_callback],
+    steps_per_epoch=conf.steps_per_epoch,
+    validation_steps=conf.validation_steps,
+)
 
 DA_model.load_weights(checkpoint_filepath)
 

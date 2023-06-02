@@ -17,7 +17,9 @@ def _initialize_hidden_state(inputs: tf.Tensor, num_hidden: int):
 
 
 class DualAttentionRNN(tf.keras.Model):
-    def __init__(self, conf: Any, encoder_num_hidden: int = 64, decoder_num_hidden: int = 64):
+    def __init__(
+        self, conf: Any, encoder_num_hidden: int = 64, decoder_num_hidden: int = 64
+    ):
         super().__init__()
         self.conf = conf
         self.encoder_num_hidden = encoder_num_hidden

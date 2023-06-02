@@ -17,10 +17,16 @@ class Config:
         self.epochs = 50  # Number of epochs to train the model
         self.window_size = 90  # Number of observations in the window
         self.n_samples = data.shape[0]  # Total number of observations
-        self.train_split = int(self.n_samples * self.per_train_split)  # Index of train split
-        self.val_split = int(self.n_samples * self.per_val_split)  # Index of validation split
+        self.train_split = int(
+            self.n_samples * self.per_train_split
+        )  # Index of train split
+        self.val_split = int(
+            self.n_samples * self.per_val_split
+        )  # Index of validation split
         self.num_features = data.shape[1]  # Number of time series
         self.seed = 0  # Seed for random
         self.steps_per_epoch = 50  # Number of steps in training in one epoch
         self.validation_steps = 20  # Number of steps in validation in one epoch
-        self.loss_func = tf.keras.losses.MeanSquaredError()  # Loss function for training model
+        self.loss_func = (
+            tf.keras.losses.MeanSquaredError()
+        )  # Loss function for training model

@@ -10,7 +10,7 @@ class AttentionEncoder(Layer):
         self.encoder_num_hidden = encoder_num_hidden
 
     def build(self, input_shape: Tuple[int]):
-        print(f'type input shape {type(input_shape)}')
+        print(f"type input shape {type(input_shape)}")
         self.w = self.add_weight(
             name="w_e",
             shape=(2 * self.encoder_num_hidden, 1),
