@@ -1,14 +1,16 @@
 import tensorflow as tf
 
+from typing import Tuple
 from keras.layers import Layer
 
 
 class AttentionEncoder(Layer):
-    def __init__(self, encoder_num_hidden=128):
+    def __init__(self, encoder_num_hidden: int = 128):
         super(AttentionEncoder, self).__init__()
         self.encoder_num_hidden = encoder_num_hidden
 
-    def build(self, input_shape):
+    def build(self, input_shape: Tuple[int]):
+        print(f'type input shape {type(input_shape)}')
         self.w = self.add_weight(
             name="w_e",
             shape=(2 * self.encoder_num_hidden, 1),

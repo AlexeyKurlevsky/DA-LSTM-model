@@ -6,6 +6,10 @@ import tensorflow as tf
 
 
 def seed_everything(seed: int = 0) -> None:
+    """
+    Seed random everything
+    :param seed:
+    """
     random.seed(seed)
     np.random.seed(seed)
     tf.random.set_seed(seed)
@@ -14,6 +18,11 @@ def seed_everything(seed: int = 0) -> None:
 
 
 def get_hdb(df: pd.DataFrame) -> pd.Series:
+    """
+    Function to calculate characteristic of dynamic balance
+    :param df: Dataframe
+    :return hdb: characteristic of dynamic balance
+    """
     n = df.shape[0]
     hdb = np.zeros(n)
     for index_recover in range(n):
@@ -27,6 +36,11 @@ def get_hdb(df: pd.DataFrame) -> pd.Series:
 
 
 def get_data(path: str) -> pd.DataFrame:
+    """
+    Prepare data for analysis
+    :param path: path containing raw data
+    :return df:
+    """
     df = pd.read_csv(path, sep=";")
     df.reset_index(drop=True, inplace=True)
     df["DateTime"] = pd.to_datetime(df["DateTime"], format="%Y-%m-%d %H:%M:%S")

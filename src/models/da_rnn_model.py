@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 
+from typing import Any
 from keras.layers import Dense
 from src.models.attention_decoder import AttentionDecoder
 from src.models.attention_encoder import AttentionEncoder
@@ -8,7 +9,7 @@ from src.models.attention_encoder import AttentionEncoder
 tf.config.run_functions_eagerly(True)
 
 
-def _initialize_hidden_state(inputs, num_hidden):
+def _initialize_hidden_state(inputs: tf.Tensor, num_hidden: int):
     return [
         tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
         tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
@@ -16,7 +17,7 @@ def _initialize_hidden_state(inputs, num_hidden):
 
 
 class DualAttentionRNN(tf.keras.Model):
-    def __init__(self, conf, encoder_num_hidden, decoder_num_hidden):
+    def __init__(self, conf: Any, encoder_num_hidden: int = 64, decoder_num_hidden: int = 64):
         super().__init__()
         self.conf = conf
         self.encoder_num_hidden = encoder_num_hidden
@@ -31,7 +32,7 @@ class DualAttentionRNN(tf.keras.Model):
         self.fc = Dense(units=self.decoder_num_hidden, activation=None)
         self.fc_final = Dense(units=self.conf.num_features, activation=None)
 
-    def encoder(self, inputs):
+    def encoder(self, inputs: tf.Tensor) -> tf.Tensor:
         h_n, s_n = _initialize_hidden_state(inputs, self.encoder_num_hidden)
         batch_size = inputs.shape[0]
         window_size = inputs.shape[1]
@@ -67,13 +68,12 @@ class DualAttentionRNN(tf.keras.Model):
             s_n = finale_state[1]
             h_encoded.append(h_n)
 
-        X_encoded = tf.stack(h_encoded)
-        # X_tilde: (batch_size, window_size, num_features)
+        x_encoded = tf.stack(h_encoded)
         return tf.transpose(
-            X_encoded, perm=[1, 0, 2]
+            x_encoded, perm=[1, 0, 2]
         )  # (batch_size, window_size, encoder_num_hidden)
 
-    def decoder(self, X_encoded, inputs):
+    def decoder(self, x_encoded: tf.Tensor, inputs: tf.Tensor) -> tf.Tensor:
         d_n, c_n = _initialize_hidden_state(inputs, self.decoder_num_hidden)
         window_size = inputs.shape[1]
         y_prev = inputs[:, :, -1]  # => (batch_size, window_size)
@@ -88,7 +88,7 @@ class DualAttentionRNN(tf.keras.Model):
             c_n_exp = tf.transpose(c_n_exp, perm=[1, 0, 2])
 
             x = tf.concat(
-                values=[d_n_exp, c_n_exp, X_encoded], axis=2
+                values=[d_n_exp, c_n_exp, x_encoded], axis=2
             )  # => (batch_size, window_size, 2 * decoder_num_hidden + encoder_num_hidden)
 
             x = self.decoder_attn(
@@ -101,7 +101,7 @@ class DualAttentionRNN(tf.keras.Model):
                 tf.reshape(x, shape=(-1, window_size)), axis=1
             )  # (batch_size, window_size)
             beta = tf.expand_dims(beta, axis=1)  # => (batch_size, 1, window_size)
-            context = tf.matmul(beta, X_encoded)[
+            context = tf.matmul(beta, x_encoded)[
                 :, 0, :
             ]  # => (batch_size, encoder_num_hidden)
 
@@ -118,13 +118,13 @@ class DualAttentionRNN(tf.keras.Model):
         )  # => (batch_size, n_future)
         return y_pred
 
-    def call(self, inputs):
+    def call(self, inputs: tf.Tensor) -> tf.Tensor:
         X_encoded = self.encoder(inputs)
         y_pred = self.decoder(X_encoded, inputs)
         y_pred = tf.expand_dims(y_pred, axis=1)
         return y_pred
 
-    def predict_interval(self, inputs, interval):
+    def predict_interval(self, inputs: np.ndarray, interval: int = 20) -> np.ndarray:
         pred = self.predict(inputs)
         predictions = pred
         inputs = np.concatenate([inputs[:, 1 : self.conf.window_size, :], pred], axis=1)
