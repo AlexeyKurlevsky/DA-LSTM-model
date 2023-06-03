@@ -5,12 +5,19 @@ from keras.layers import Layer
 
 
 class AttentionEncoder(Layer):
-    def __init__(self, encoder_num_hidden: int = 128):
+    def __init__(self, encoder_num_hidden: int = 64):
+        """
+        Encoder block with input attention mechanism
+        :param encoder_num_hidden: Number of cells in encoder block
+        """
         super(AttentionEncoder, self).__init__()
         self.encoder_num_hidden = encoder_num_hidden
 
-    def build(self, input_shape: Tuple[int]):
-        print(f"type input shape {type(input_shape)}")
+    def build(self, input_shape):
+        """
+        Building layer parameters
+        :param input_shape: tuple with shape
+        """
         self.w = self.add_weight(
             name="w_e",
             shape=(2 * self.encoder_num_hidden, 1),
@@ -29,6 +36,7 @@ class AttentionEncoder(Layer):
 
     def call(self, inputs):
         """
+        Eq. 8 in the article
         :param inputs: (batch_size*num_features, 2 * encoder_num_hidden + window_size)
         :return (batch_size*num_features, 1)
         """

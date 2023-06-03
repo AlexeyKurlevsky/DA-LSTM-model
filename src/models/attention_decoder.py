@@ -4,12 +4,21 @@ from keras.layers import Layer
 
 
 class AttentionDecoder(Layer):
-    def __init__(self, decoder_num_hidden=128, encoder_num_hidden=128):
+    def __init__(self, decoder_num_hidden=64, encoder_num_hidden=64):
+        """
+        Decoder block with temporal attention mechanism
+        :param decoder_num_hidden: Number of cells in decoder block
+        :param encoder_num_hidden: Number of cells in encoder block
+        """
         super(AttentionDecoder, self).__init__()
         self.encoder_num_hidden = encoder_num_hidden
         self.decoder_num_hidden = decoder_num_hidden
 
     def build(self, input_shape):
+        """
+        Building layer parameters
+        :param input_shape: tuple with shape
+        """
         self.w = self.add_weight(
             name="w_d",
             shape=(input_shape[-1] - self.encoder_num_hidden, 1),
@@ -28,6 +37,7 @@ class AttentionDecoder(Layer):
 
     def call(self, inputs):
         """
+        Eq. 12 in the article
         :param inputs: (batch_size*window_size, 2 * decoder_num_hidden + encoder_num_hidden)
         :return (batch_size*window_size, 1)
         """

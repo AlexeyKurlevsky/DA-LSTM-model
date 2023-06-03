@@ -10,6 +10,9 @@ tf.config.run_functions_eagerly(True)
 
 
 def _initialize_hidden_state(inputs: tf.Tensor, num_hidden: int):
+    """
+    Initialize hidden state for LSTM cell
+    """
     return [
         tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
         tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
@@ -20,6 +23,14 @@ class DualAttentionRNN(tf.keras.Model):
     def __init__(
         self, conf: Any, encoder_num_hidden: int = 64, decoder_num_hidden: int = 64
     ):
+        """
+        Class with Dual-Stage Attention-Based Recurrent Neural Network.
+        The model belongs to the encoder-decoder type. The encoder block uses input attention with LSTM layer.
+        The decoder block uses temporal attention mechanism with LSTM layer.
+        :param conf: dictionary with research settings
+        :param encoder_num_hidden: Number of cells in encoder block
+        :param decoder_num_hidden: Number of cells in decoder block
+        """
         super().__init__()
         self.conf = conf
         self.encoder_num_hidden = encoder_num_hidden
@@ -35,8 +46,12 @@ class DualAttentionRNN(tf.keras.Model):
         self.fc_final = Dense(units=self.conf.num_features, activation=None)
 
     def encoder(self, inputs: tf.Tensor) -> tf.Tensor:
+        """
+        Encoder block
+        :param inputs: batch with input data (batch_size, window_size, num_feature)
+        :return x_encoded: encoded information (batch_size, window_size, encoder_num_hidden)
+        """
         h_n, s_n = _initialize_hidden_state(inputs, self.encoder_num_hidden)
-        batch_size = inputs.shape[0]
         window_size = inputs.shape[1]
         num_features = inputs.shape[2]
 
@@ -76,6 +91,12 @@ class DualAttentionRNN(tf.keras.Model):
         )  # (batch_size, window_size, encoder_num_hidden)
 
     def decoder(self, x_encoded: tf.Tensor, inputs: tf.Tensor) -> tf.Tensor:
+        """
+        Decoder block
+        :param x_encoded: Information from encoder (batch_size, window_size, encoder_num_hidden))
+        :param inputs: batch with input data (batch_size, window_size, num_feature)
+        :return y_pred: predicted values
+        """
         d_n, c_n = _initialize_hidden_state(inputs, self.decoder_num_hidden)
         window_size = inputs.shape[1]
         y_prev = inputs[:, :, -1]  # => (batch_size, window_size)
@@ -121,12 +142,24 @@ class DualAttentionRNN(tf.keras.Model):
         return y_pred
 
     def call(self, inputs: tf.Tensor) -> tf.Tensor:
-        X_encoded = self.encoder(inputs)
-        y_pred = self.decoder(X_encoded, inputs)
+        """
+        Method for training the model
+        :param inputs: batch with input data (batch_size, window_size, num_feature)
+        :return y_pred: predicted values (batch_size, 1, num_feature)
+        """
+        x_encoded = self.encoder(inputs)
+        y_pred = self.decoder(x_encoded, inputs)
         y_pred = tf.expand_dims(y_pred, axis=1)
         return y_pred
 
     def predict_interval(self, inputs: np.ndarray, interval: int = 20) -> np.ndarray:
+        """
+        Method for interval prediction.
+        The predicted values at time t are used to predict the value t+1
+        :param inputs: batch with input data (batch_size, window_size, num_feature)
+        :param interval: Forecast horizon
+        :return predictions: (batch_size, n_future, num_feature)
+        """
         pred = self.predict(inputs)
         predictions = pred
         inputs = np.concatenate([inputs[:, 1 : self.conf.window_size, :], pred], axis=1)
@@ -136,5 +169,4 @@ class DualAttentionRNN(tf.keras.Model):
             inputs = np.concatenate(
                 [inputs[:, 1 : self.conf.window_size, :], pred], axis=1
             )
-
         return predictions
