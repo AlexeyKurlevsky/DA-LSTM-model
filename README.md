@@ -2,7 +2,7 @@
 динамического баланса, введенной в [балансовой модели CIR](https://www.researchgate.net/publication/355017277_Balance_Model_of_COVID-19_Epidemic_Based_on_Percentage_Growth_RateBalansovaa_model_epidemii_COVID-19_na_osnove_procentnogo_prirosta), 
 от параметров распространения COVID-19. Ниже представлена динамика ХДБ (синяя кривая) 
 и кол-во заражений за день (красная кривая)
-![alt text](./img/hdb.png)
+![](./img/hdb.PNG)
 В качестве прогнозной модели используется [Dual-Stage Attention-Based Recurrent Neural Network](https://www.researchgate.net/publication/316031353_A_Dual-Stage_Attention-Based_Recurrent_Neural_Network_for_Time_Series_Prediction).
 Особенность модели заключается в использовании двухэтапного механизма внимания.
 Архитектура сети представлена ниже.
@@ -20,4 +20,4 @@
 | CNN-LSTM   | 23.04        |-2.58      |
 
 Также модели удается достаточно хорошо предсказывать тренд динамики:
-![alt text](./img/test_predict.png)
+![alt text](./img/test_predict.PNG)
