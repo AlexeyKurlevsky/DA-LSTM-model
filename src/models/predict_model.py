@@ -17,7 +17,7 @@ from src.visualization.plot_test_window import plot_test_window
 @click.argument("output_path", type=click.Path())
 def predict_model(input_path: str, n_future: int, model_feature_path: str, output_path: str):
     seed_everything()
-    df_search = pd.read_csv(input_path)
+    df_search = pd.read_csv(input_path, parse_dates=["Дата"])
     df_search = df_search.set_index("Дата")
     conf = Config(df_search)
     conf.window_size = 90

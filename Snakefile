@@ -4,7 +4,7 @@ rule all:
         "data/interim/data_with_hdb.csv",
         "data/processed/data_search.csv",
         "models/saved_model/",
-        "reports/figures/test_predict_snake.png",
+        "reports/figures/test_predict.png",
 
 
 rule first_handle_data:
