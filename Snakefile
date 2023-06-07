@@ -51,3 +51,11 @@ rule predict_model:
         "reports/figures/test_predict_snake.png"
     shell:
         "python3 -m src.models.predict_model {input.input_path_data} {params.n_future} {input.model_feature_path} {output}"
+
+rule plot_hdb:
+    input:
+        "data/processed/data_search.csv"
+    output:
+        "reports/figures/hdb.png"
+    shell:
+        "python3 -m src.visualization.plot_hdb {input} {output}"

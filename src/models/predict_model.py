@@ -14,6 +14,13 @@ from src import Config, seed_everything, WindowGenerator, plot_test_window
 @click.argument("model_feature_path", type=click.Path())
 @click.argument("output_path", type=click.Path())
 def predict_model(input_path: str, n_future: int, model_feature_path: str, output_path: str):
+    """
+    Function for predict values.
+    :param input_path: path processed data
+    :param n_future: forecast horizon
+    :param model_feature_path: directory with model
+    :param output_path: path to save plot with predicted values
+    """
     seed_everything()
     df_search = pd.read_csv(input_path, parse_dates=["Дата"])
     df_search = df_search.set_index("Дата")

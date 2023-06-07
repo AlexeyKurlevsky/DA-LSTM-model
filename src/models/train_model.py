@@ -15,6 +15,14 @@ from src import seed_everything, Config, WindowGenerator
 @click.argument("max_epochs", type=click.INT)
 @click.argument("output_path", type=click.Path())
 def train_model(input_path: str, output_path: str, window_size: int, max_epochs: int) -> None:
+    """
+    Function for train model. When training, the EarlyStopping method is used.
+    Training settings are declared in the config dictionary.
+    :param input_path: path processed data
+    :param output_path: path to save model property
+    :param window_size: length of window
+    :param max_epochs: maximum number of epochs
+    """
     seed_everything()
     df_search = pd.read_csv(input_path, parse_dates=["Дата"])
     df_search = df_search.set_index("Дата")
