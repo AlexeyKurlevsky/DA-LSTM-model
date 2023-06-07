@@ -5,9 +5,7 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 
 from models import DualAttentionRNN
-from src import seed_everything, Config
-from src.features.window_generator import WindowGenerator
-from src.visualization.plot_test_window import plot_test_window
+from src import Config, seed_everything, WindowGenerator, plot_test_window
 
 
 @click.command()
