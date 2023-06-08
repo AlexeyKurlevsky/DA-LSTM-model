@@ -3,8 +3,12 @@ rule all:
         "data/interim/data_first_handle.csv",
         "data/interim/data_with_hdb.csv",
         "data/processed/data_search.csv",
-        "models/saved_model/",
-        "reports/figures/test_predict_snake.png",
+        expand("models/saved_model/"),
+        "reports/validation_metric/metric_all_window.csv",
+        "reports/validation_metric/average_metric.csv",
+        "reports/test_metric/metric_all_window.csv",
+        "reports/test_metric/average_metric.csv",
+        "reports/figures/test_predict_snake.png"
 
 rule first_handle_data:
     input:
@@ -35,22 +39,29 @@ rule train_model:
         input_path = "data/processed/data_search.csv",
     params:
         window_size = "90",
-        max_epochs = "300"
+        n_future = "20",
+        max_epochs = "1",
+        output_model_path = "models/saved_model/",
     output:
-        "models/saved_model/"
+        output_metric_path = ["reports/validation_metric/metric_all_window.csv",
+                              "reports/validation_metric/average_metric.csv"],
+        output_figure_path = "reports/figures/validation_predict_snake.png",
     shell:
-        "python3 -m src.models.train_model {input.input_path} {params.window_size} {params.max_epochs} {output}"
+        "python3 -m src.models.train_model {input} {params} {output}"
 
 rule predict_model:
     input:
         input_path_data = "data/processed/data_search.csv",
-        model_feature_path = "models/saved_model/",
+        model_feature_path = expand("models/saved_model/"),
     params:
-        n_future = "20"
+        window_size = "90",
+        n_future = "20",
     output:
-        "reports/figures/test_predict_snake.png"
+        output_metric_path = ["reports/test_metric/metric_all_window.csv",
+                              "reports/test_metric/average_metric.csv"],
+        output_figure_path = "reports/figures/test_predict_snake.png"
     shell:
-        "python3 -m src.models.predict_model {input.input_path_data} {params.n_future} {input.model_feature_path} {output}"
+        "python3 -m src.models.predict_model {input} {params} {output}"
 
 rule plot_hdb:
     input:
