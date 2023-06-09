@@ -41,8 +41,8 @@ rule train_model:
         window_size = "90",
         n_future = "20",
         max_epochs = "1",
-        output_model_path = "models/saved_model/",
     output:
+        output_model_path = directory("models/saved_model/"),
         output_metric_path = ["reports/validation_metric/metric_all_window.csv",
                               "reports/validation_metric/average_metric.csv"],
         output_figure_path = "reports/figures/validation_predict_snake.png",
