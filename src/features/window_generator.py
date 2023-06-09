@@ -1,6 +1,3 @@
-import IPython
-import IPython.display
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -297,7 +294,6 @@ class WindowGenerator:
                 y_val_inv[:, -1], pred_val_inv[:, -1]
             )
             list_metric.append(mape_e1d1 * 100)
-            IPython.display.clear_output()
         return list_metric
 
     def calc_average_validation_mape(self, model: Any) -> float:
@@ -327,7 +323,6 @@ class WindowGenerator:
                 y_test_inv[:, -1], pred_test_inv[:, -1]
             )
             list_metric.append(mape_e1d1 * 100)
-            IPython.display.clear_output()
         return list_metric
 
     def calc_average_test_mape(self, model: Any) -> float:
