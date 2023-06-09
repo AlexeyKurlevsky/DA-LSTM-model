@@ -27,5 +27,5 @@ def calculate_hdb(input_path: str, output_path: str) -> None:
     df.to_csv(output_path, index=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     calculate_hdb()

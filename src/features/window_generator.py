@@ -11,11 +11,11 @@ from sklearn.preprocessing import StandardScaler
 
 class WindowGenerator:
     def __init__(
-            self,
-            data: pd.DataFrame,
-            conf: Any,
-            mean_flg: bool = False,
-            scaler: Any = StandardScaler(),
+        self,
+        data: pd.DataFrame,
+        conf: Any,
+        mean_flg: bool = False,
+        scaler: Any = StandardScaler(),
     ):
         """
         Class that generates time series windows.
@@ -36,10 +36,10 @@ class WindowGenerator:
         Data normalization
         """
         assert (
-                self.data.columns[-1] == "Характерстика ДБ"
+            self.data.columns[-1] == "Характерстика ДБ"
         ), "Неправильная последовательность столбцов"
         data_train = self.data.iloc[: self.conf.train_split, :]
-        data_test = self.data.iloc[self.conf.train_split:, :]
+        data_test = self.data.iloc[self.conf.train_split :, :]
         col_name = self.data.columns
         df_train_scaled = pd.DataFrame(
             self.scaler.fit_transform(data_train),
@@ -59,7 +59,7 @@ class WindowGenerator:
             df_scaled = pd.concat([df_mean, df_test_scaled])
         self.conf.n_samples = df_scaled.shape[0]
         assert (
-                self.conf.val_split + self.conf.n_future <= self.conf.n_samples
+            self.conf.val_split + self.conf.n_future <= self.conf.n_samples
         ), f"Некорректное разбиение"
         return df_scaled
 
@@ -108,11 +108,11 @@ class WindowGenerator:
         )
         X_val, y_val = self._split_series(
             df_scaled.iloc[
-            self.conf.train_split - self.conf.window_size: self.conf.val_split, :
+                self.conf.train_split - self.conf.window_size : self.conf.val_split, :
             ].values
         )
         X_test, y_test = self._split_series(
-            df_scaled.iloc[self.conf.val_split - self.conf.window_size:, :].values
+            df_scaled.iloc[self.conf.val_split - self.conf.window_size :, :].values
         )
 
         return [X_train, y_train, X_val, y_val, X_test, y_test]
@@ -162,8 +162,8 @@ class WindowGenerator:
         X_train, y_train, X_val, y_val, X_test, y_test = self.get_data_to_model()
         pred_val = model.predict_interval(X_val, self.conf.n_future)
         df_val = df_scaled.iloc[
-                 self.conf.train_split - self.conf.window_size: self.conf.val_split, :
-                 ]
+            self.conf.train_split - self.conf.window_size : self.conf.val_split, :
+        ]
         date_val = df_val.index.values
         for ind, val in enumerate(window_list):
             assert X_val.shape[0] - 1 >= val, f"Окна c номером {val} не существует"
@@ -172,14 +172,16 @@ class WindowGenerator:
             )
             y_based_pred = self.scaler.inverse_transform(X_val[val, :, :])
             ax[ind].plot(
-                date_val[val: val + self.conf.window_size],
+                date_val[val : val + self.conf.window_size],
                 y_based_pred[:, -1],
                 color="cornflowerblue",
             )
             ax[ind].plot(
                 date_val[
-                val + self.conf.window_size:
-                val + self.conf.window_size + self.conf.n_future
+                    val
+                    + self.conf.window_size : val
+                    + self.conf.window_size
+                    + self.conf.n_future
                 ],
                 y_val_inv[:, -1],
                 label="Факт",
@@ -187,8 +189,10 @@ class WindowGenerator:
             )
             ax[ind].plot(
                 date_val[
-                val + self.conf.window_size:
-                val + self.conf.window_size + self.conf.n_future
+                    val
+                    + self.conf.window_size : val
+                    + self.conf.window_size
+                    + self.conf.n_future
                 ],
                 pred_val_inv[:, -1],
                 label="Прогноз",
@@ -205,7 +209,8 @@ class WindowGenerator:
                 color="lightgray",
             )
             mape = (
-                    mean_absolute_percentage_error(y_val_inv[:, -1], pred_val_inv[:, -1]) * 100
+                mean_absolute_percentage_error(y_val_inv[:, -1], pred_val_inv[:, -1])
+                * 100
             )
             ax[ind].set_title(f"Предсказание модели. МАРЕ={round(mape, 2)} %")
             ax[ind].xaxis.set_major_formatter(dates.DateFormatter("%d-%m-%y"))
@@ -226,7 +231,7 @@ class WindowGenerator:
         df_scaled = self.get_standard_data()
         X_train, y_train, X_val, y_val, X_test, y_test = self.get_data_to_model()
         pred_test = model.predict_interval(X_test, self.conf.n_future)
-        df_test = df_scaled.iloc[self.conf.val_split - self.conf.window_size:, :]
+        df_test = df_scaled.iloc[self.conf.val_split - self.conf.window_size :, :]
         date_test = df_test.index.values
         for ind, val in enumerate(window_list):
             y_test_inv, pred_test_inv = self.get_inverse_values(
@@ -234,14 +239,16 @@ class WindowGenerator:
             )
             y_based_pred = self.scaler.inverse_transform(X_test[val, :, :])
             ax[ind].plot(
-                date_test[val: val + self.conf.window_size],
+                date_test[val : val + self.conf.window_size],
                 y_based_pred[:, -1],
                 color="cornflowerblue",
             )
             ax[ind].plot(
                 date_test[
-                val + self.conf.window_size:
-                val + self.conf.window_size + self.conf.n_future
+                    val
+                    + self.conf.window_size : val
+                    + self.conf.window_size
+                    + self.conf.n_future
                 ],
                 y_test_inv[:, -1],
                 label="Факт",
@@ -249,8 +256,10 @@ class WindowGenerator:
             )
             ax[ind].plot(
                 date_test[
-                val + self.conf.window_size:
-                val + self.conf.window_size + self.conf.n_future
+                    val
+                    + self.conf.window_size : val
+                    + self.conf.window_size
+                    + self.conf.n_future
                 ],
                 pred_test_inv[:, -1],
                 label="Прогноз",
@@ -267,7 +276,8 @@ class WindowGenerator:
                 color="lightgray",
             )
             mape = (
-                    mean_absolute_percentage_error(y_test_inv[:, -1], pred_test_inv[:, -1]) * 100
+                mean_absolute_percentage_error(y_test_inv[:, -1], pred_test_inv[:, -1])
+                * 100
             )
             ax[ind].set_title(f"Предсказание модели. МАРЕ={round(mape, 2)}.")
             ax[ind].xaxis.set_major_formatter(dates.DateFormatter("%d-%m-%y"))

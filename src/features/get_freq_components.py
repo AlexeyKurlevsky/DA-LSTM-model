@@ -36,10 +36,12 @@ def get_freq_components(input_path: str, output_path: str) -> None:
     df["Day sin"] = np.sin(timestamp_s * (2 * np.pi / day))
     df["Day cos"] = np.cos(timestamp_s * (2 * np.pi / day))
 
-    df_search = df[["Дата", "Заражений за день", "Day sin", "Day cos", "Характерстика ДБ"]]
+    df_search = df[
+        ["Дата", "Заражений за день", "Day sin", "Day cos", "Характерстика ДБ"]
+    ]
     df_search.dropna(inplace=True)
     df_search.to_csv(output_path, index=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     get_freq_components()

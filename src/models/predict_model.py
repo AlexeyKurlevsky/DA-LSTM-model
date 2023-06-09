@@ -6,7 +6,13 @@ import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 
 from models import DualAttentionRNN
-from src import Config, seed_everything, WindowGenerator, calc_test_metric, plot_test_window
+from src import (
+    Config,
+    seed_everything,
+    WindowGenerator,
+    calc_test_metric,
+    plot_test_window,
+)
 
 
 @click.command()
@@ -17,8 +23,15 @@ from src import Config, seed_everything, WindowGenerator, calc_test_metric, plot
 @click.argument("output_metric_all", type=click.Path())
 @click.argument("output_metric_average", type=click.Path())
 @click.argument("output_figure_path", type=click.Path())
-def predict_model(input_path: str, model_feature_path: str, output_metric_all: str, output_metric_average: str,
-                  output_figure_path: str, window_size: int,  n_future: int):
+def predict_model(
+    input_path: str,
+    model_feature_path: str,
+    output_metric_all: str,
+    output_metric_average: str,
+    output_figure_path: str,
+    window_size: int,
+    n_future: int,
+):
     """
     Function for predict values.
     :param input_path: path processed data
@@ -53,17 +66,14 @@ def predict_model(input_path: str, model_feature_path: str, output_metric_all: s
 
     df_metric_all_window = pd.DataFrame(data={"MAPE": mape_arr, "RMSE": rmse_arr})
     df_average_metric = pd.DataFrame(
-        data={"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)},
-        index=[0]
+        data={"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}, index=[0]
     )
 
-    df_metric_all_window.to_csv(
-        output_metric_all, index=False
-    )
+    df_metric_all_window.to_csv(output_metric_all, index=False)
     df_average_metric.to_csv(output_metric_average, index=False)
 
     plot_test_window(w_one_target, y_pred, output_figure_path)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     predict_model()

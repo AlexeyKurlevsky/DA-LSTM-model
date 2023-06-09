@@ -15,6 +15,7 @@ matplotlib = "3.3.2"
 keras = "2.11.0"
 scikit-learn = "^0.24"
 snakemake = "^7.26.0"
+black = "^23.3.0"
 
 
 [build-system]

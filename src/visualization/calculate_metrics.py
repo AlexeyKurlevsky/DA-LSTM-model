@@ -19,12 +19,8 @@ def calc_validation_metric(window: Any, y_pred) -> List[np.ndarray]:
         y_val_inv, pred_val_inv = window.get_inverse_values(
             y_val[wind, :, :], y_pred[wind, :, :]
         )
-        mape = mean_absolute_percentage_error(
-            y_val_inv[:, -1], pred_val_inv[:, -1]
-        )
-        rmse = mean_squared_error(
-            y_val_inv[:, -1], pred_val_inv[:, -1], squared=False
-        )
+        mape = mean_absolute_percentage_error(y_val_inv[:, -1], pred_val_inv[:, -1])
+        rmse = mean_squared_error(y_val_inv[:, -1], pred_val_inv[:, -1], squared=False)
         list_mape.append(mape * 100)
         list_rmse.append(rmse)
     return [np.array(list_mape), np.array(list_rmse)]
@@ -45,12 +41,8 @@ def calc_test_metric(window: Any, y_pred) -> List[np.ndarray]:
         y_test_inv, pred_val_inv = window.get_inverse_values(
             y_test[wind, :, :], y_pred[wind, :, :]
         )
-        mape = mean_absolute_percentage_error(
-            y_test_inv[:, -1], pred_val_inv[:, -1]
-        )
-        rmse = mean_squared_error(
-            y_test_inv[:, -1], pred_val_inv[:, -1], squared=False
-        )
+        mape = mean_absolute_percentage_error(y_test_inv[:, -1], pred_val_inv[:, -1])
+        rmse = mean_squared_error(y_test_inv[:, -1], pred_val_inv[:, -1], squared=False)
         list_mape.append(mape * 100)
         list_rmse.append(rmse)
     return [np.array(list_mape), np.array(list_rmse)]

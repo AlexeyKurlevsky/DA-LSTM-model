@@ -7,7 +7,13 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler
 
 from models import DualAttentionRNN
-from src import seed_everything, Config, WindowGenerator, calc_validation_metric, plot_validation_window
+from src import (
+    seed_everything,
+    Config,
+    WindowGenerator,
+    calc_validation_metric,
+    plot_validation_window,
+)
 
 
 @click.command()
@@ -92,13 +98,10 @@ def train_model(
 
     df_metric_all_window = pd.DataFrame(data={"MAPE": mape_arr, "RMSE": rmse_arr})
     df_average_metric = pd.DataFrame(
-        data={"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)},
-        index=[0]
+        data={"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}, index=[0]
     )
 
-    df_metric_all_window.to_csv(
-        output_metric_all, index=False
-    )
+    df_metric_all_window.to_csv(output_metric_all, index=False)
     df_average_metric.to_csv(output_metric_average, index=False)
 
     plot_validation_window(w_one_target, y_pred, output_figure_path)
