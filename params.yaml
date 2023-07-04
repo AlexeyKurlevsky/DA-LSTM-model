@@ -1,2 +1,14 @@
 data_feature:
   day_freq: 210
+
+train:
+  window_size: 90
+  n_future: 20
+  max_epochs: 1
+  num_hidden_state: 64
+  patience: 10
+  batch_size: 32
+  seed: 0
+  steps_per_epoch: 10
+  validation_steps: 5
+

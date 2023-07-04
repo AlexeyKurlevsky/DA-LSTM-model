@@ -1,7 +1,7 @@
 stages:
 
   first_handle_data:
-    cmd: python src/data/read_data.py data/raw/data_yandex.csv data/interim/data_first_handle.csv
+    cmd: python3 -m src.data.read_data data/raw/data_yandex.csv data/interim/data_first_handle.csv
     deps:
       - data/raw/data_yandex.csv
       - src/data/read_data.py
@@ -9,7 +9,7 @@ stages:
       - data/interim/data_first_handle.csv
 
   calc_hdb:
-    cmd: python src/data/calculate_hdb.py data/interim/data_first_handle.csv data/interim/data_with_hdb.csv
+    cmd: python3 -m src.data.calculate_hdb data/interim/data_first_handle.csv data/interim/data_with_hdb.csv
     deps:
       - data/interim/data_first_handle.csv
       - src/data/calculate_hdb.py
@@ -17,7 +17,7 @@ stages:
       - data/interim/data_with_hdb.csv
 
   calc_freq_components:
-    cmd: python src/features/get_freq_components.py data/interim/data_with_hdb.csv data/processed/data_search.csv
+    cmd: python3 -m src.features.get_freq_components data/interim/data_with_hdb.csv data/processed/data_search.csv
     deps:
       - data/interim/data_with_hdb.csv
       - src/features/get_freq_components.py
@@ -25,4 +25,26 @@ stages:
       - data_feature.day_freq
     outs:
       - data/processed/data_search.csv
+
+  train_model:
+    cmd: python3 -m src.models.train_model data/processed/data_search.csv models/saved_model/weight
+    deps:
+      - data/processed/data_search.csv
+      - src/models/train_model.py
+      - models/attention_decoder.py
+      - models/attention_encoder.py
+      - models/da_rnn_model.py
+    params:
+      - train.window_size
+      - train.max_epochs
+      - train.num_hidden_state
+      - train.patience
+      - train.batch_size
+      - train.seed
+      - train.steps_per_epoch
+      - train.validation_steps
+    outs:
+      - models/saved_model/weight/checkpoint
+      - models/saved_model/weight/checkpoint.data-00000-of-00001
+      - models/saved_model/weight/checkpoint.index
 

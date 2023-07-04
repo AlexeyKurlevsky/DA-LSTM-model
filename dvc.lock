@@ -1,7 +1,7 @@
 schema: '2.0'
 stages:
   first_handle_data:
-    cmd: python src/data/read_data.py data/raw/data_yandex.csv data/interim/data_first_handle.csv
+    cmd: python3 -m src.data.read_data data/raw/data_yandex.csv data/interim/data_first_handle.csv
     deps:
     - path: data/raw/data_yandex.csv
       hash: md5
@@ -17,7 +17,7 @@ stages:
       md5: 81487c22dbeab64ff0aa901067b3a047
       size: 129916
   calc_hdb:
-    cmd: python src/data/calculate_hdb.py data/interim/data_first_handle.csv data/interim/data_with_hdb.csv
+    cmd: python3 -m src.data.calculate_hdb data/interim/data_first_handle.csv data/interim/data_with_hdb.csv
     deps:
     - path: data/interim/data_first_handle.csv
       hash: md5
@@ -33,7 +33,7 @@ stages:
       md5: 04c9a433646dee80a16c8644476cff7a
       size: 135034
   calc_freq_components:
-    cmd: python src/features/get_freq_components.py data/interim/data_with_hdb.csv
+    cmd: python3 -m src.features.get_freq_components data/interim/data_with_hdb.csv
       data/processed/data_search.csv
     deps:
     - path: data/interim/data_with_hdb.csv
@@ -52,3 +52,49 @@ stages:
       hash: md5
       md5: 75b096fe8352045e82e0bfa4077e287a
       size: 62325
+  train_model:
+    cmd: python3 -m src.models.train_model data/processed/data_search.csv models/saved_model/weight
+    deps:
+    - path: data/processed/data_search.csv
+      hash: md5
+      md5: 75b096fe8352045e82e0bfa4077e287a
+      size: 62325
+    - path: models/attention_decoder.py
+      hash: md5
+      md5: 7b1cfc4a57cbdeb127a561d02f7f0c9c
+      size: 1673
+    - path: models/attention_encoder.py
+      hash: md5
+      md5: 8f86568786b0ef97db043bdd1d632d75
+      size: 1560
+    - path: models/da_rnn_model.py
+      hash: md5
+      md5: 19739b7d384316c8b959b6abfc1775fa
+      size: 7122
+    - path: src/models/train_model.py
+      hash: md5
+      md5: 26c5ee1211970a9672e3aac68addc9f4
+      size: 2606
+    params:
+      params.yaml:
+        train.batch_size: 32
+        train.max_epochs: 1
+        train.num_hidden_state: 64
+        train.patience: 10
+        train.seed: 0
+        train.steps_per_epoch: 10
+        train.validation_steps: 5
+        train.window_size: 90
+    outs:
+    - path: models/saved_model/weight/checkpoint
+      hash: md5
+      md5: 7c1a6f060d24ebb29b6de8f46215368b
+      size: 77
+    - path: models/saved_model/weight/checkpoint.data-00000-of-00001
+      hash: md5
+      md5: 4ea1b9c86654f3442803f8945f5bcdda
+      size: 676999
+    - path: models/saved_model/weight/checkpoint.index
+      hash: md5
+      md5: 95dac79793c92ac664e2a21cea6928af
+      size: 3112
