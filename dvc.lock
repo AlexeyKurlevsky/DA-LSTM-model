@@ -1,0 +1,54 @@
+schema: '2.0'
+stages:
+  first_handle_data:
+    cmd: python src/data/read_data.py data/raw/data_yandex.csv data/interim/data_first_handle.csv
+    deps:
+    - path: data/raw/data_yandex.csv
+      hash: md5
+      md5: 0e9cfe7989fec0aad151fcd82116489b
+      size: 64732
+    - path: src/data/read_data.py
+      hash: md5
+      md5: 132aed3cc7852a24ae23d67ce36c2da2
+      size: 1416
+    outs:
+    - path: data/interim/data_first_handle.csv
+      hash: md5
+      md5: 81487c22dbeab64ff0aa901067b3a047
+      size: 129916
+  calc_hdb:
+    cmd: python src/data/calculate_hdb.py data/interim/data_first_handle.csv data/interim/data_with_hdb.csv
+    deps:
+    - path: data/interim/data_first_handle.csv
+      hash: md5
+      md5: 81487c22dbeab64ff0aa901067b3a047
+      size: 129916
+    - path: src/data/calculate_hdb.py
+      hash: md5
+      md5: 408c6da46914c2f506164f56c950da44
+      size: 1080
+    outs:
+    - path: data/interim/data_with_hdb.csv
+      hash: md5
+      md5: 04c9a433646dee80a16c8644476cff7a
+      size: 135034
+  calc_freq_components:
+    cmd: python src/features/get_freq_components.py data/interim/data_with_hdb.csv
+      data/processed/data_search.csv
+    deps:
+    - path: data/interim/data_with_hdb.csv
+      hash: md5
+      md5: 04c9a433646dee80a16c8644476cff7a
+      size: 135034
+    - path: src/features/get_freq_components.py
+      hash: md5
+      md5: 7a250560830ca5b5b8e215a03a1c984c
+      size: 1694
+    params:
+      params.yaml:
+        data_feature.day_freq: 210
+    outs:
+    - path: data/processed/data_search.csv
+      hash: md5
+      md5: 75b096fe8352045e82e0bfa4077e287a
+      size: 62325

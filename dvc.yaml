@@ -1,0 +1,28 @@
+stages:
+
+  first_handle_data:
+    cmd: python src/data/read_data.py data/raw/data_yandex.csv data/interim/data_first_handle.csv
+    deps:
+      - data/raw/data_yandex.csv
+      - src/data/read_data.py
+    outs:
+      - data/interim/data_first_handle.csv
+
+  calc_hdb:
+    cmd: python src/data/calculate_hdb.py data/interim/data_first_handle.csv data/interim/data_with_hdb.csv
+    deps:
+      - data/interim/data_first_handle.csv
+      - src/data/calculate_hdb.py
+    outs:
+      - data/interim/data_with_hdb.csv
+
+  calc_freq_components:
+    cmd: python src/features/get_freq_components.py data/interim/data_with_hdb.csv data/processed/data_search.csv
+    deps:
+      - data/interim/data_with_hdb.csv
+      - src/features/get_freq_components.py
+    params:
+      - data_feature.day_freq
+    outs:
+      - data/processed/data_search.csv
+

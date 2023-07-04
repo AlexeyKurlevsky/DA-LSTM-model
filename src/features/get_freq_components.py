@@ -1,13 +1,21 @@
+import logging
 import click
 import pandas as pd
 import numpy as np
+import yaml
 
 
 @click.command()
 @click.argument("input_path", type=click.Path())
 @click.argument("output_path", type=click.Path())
 def get_freq_components(input_path: str, output_path: str) -> None:
+    logging.basicConfig(level=logging.INFO)
+
+    params = yaml.safe_load(open("params.yaml"))["data_feature"]
+
     df = pd.read_csv(input_path, parse_dates=["Дата"])
+    logging.info("Data read")
+
     df = df[
         [
             "Дата",
@@ -31,7 +39,7 @@ def get_freq_components(input_path: str, output_path: str) -> None:
 
     timestamp_s = df["Дата"].map(pd.Timestamp.timestamp)
 
-    day = 24 * 60 * 60 * 210
+    day = 24 * 60 * 60 * params["day_freq"]
 
     df["Day sin"] = np.sin(timestamp_s * (2 * np.pi / day))
     df["Day cos"] = np.cos(timestamp_s * (2 * np.pi / day))
@@ -41,6 +49,7 @@ def get_freq_components(input_path: str, output_path: str) -> None:
     ]
     df_search.dropna(inplace=True)
     df_search.to_csv(output_path, index=False)
+    logging.info("Frequency response calculated")
 
 
 if __name__ == "__main__":
