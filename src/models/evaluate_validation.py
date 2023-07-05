@@ -1,3 +1,5 @@
+import json
+
 import click
 import pandas as pd
 import numpy as np
@@ -13,6 +15,8 @@ from src import (
     calc_test_metric,
     plot_test_window,
 )
+from src.visualization.calculate_metrics import calc_validation_metric
+from src.visualization.plot_window import plot_validation_window
 
 
 @click.command()
@@ -61,16 +65,27 @@ def predict_model(
     da_model.load_weights(checkpoint_filepath)
 
     X_train, y_train, X_val, y_val, X_test, y_test = w_one_target.get_data_to_model()
+    y_pred = da_model.predict_interval(X_val, w_one_target.conf.n_future)
+    mape_arr, rmse_arr = calc_validation_metric(w_one_target, y_pred)
+
+    df_metric_all_window = pd.DataFrame(data={"MAPE": mape_arr, "RMSE": rmse_arr})
+    df_metric_all_window.to_csv(output_validation_metric_all, index=False)
+
+    df_average_metric = {"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}
+    with open(output_metric_average, "w") as validation_score_file:
+        json.dump(df_average_metric, validation_score_file, indent=4)
+
+    # plot_validation_window(w_one_target, y_pred, output_figure_path)
+
     y_pred = da_model.predict_interval(X_test, w_one_target.conf.n_future)
     mape_arr, rmse_arr = calc_test_metric(w_one_target, y_pred)
 
     df_metric_all_window = pd.DataFrame(data={"MAPE": mape_arr, "RMSE": rmse_arr})
-    df_average_metric = pd.DataFrame(
-        data={"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}, index=[0]
-    )
+    df_metric_all_window.to_csv(output_test_metric_all, index=False)
 
-    df_metric_all_window.to_csv(output_metric_all, index=False)
-    df_average_metric.to_csv(output_metric_average, index=False)
+    df_average_metric = {"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}
+    with open(output_metric_average, "w") as validation_score_file:
+        json.dump(df_average_metric, validation_score_file, indent=4)
 
     plot_test_window(w_one_target, y_pred, output_figure_path)
 
