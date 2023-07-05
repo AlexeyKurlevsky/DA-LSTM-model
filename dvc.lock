@@ -71,6 +71,14 @@ stages:
       hash: md5
       md5: 19739b7d384316c8b959b6abfc1775fa
       size: 7122
+    - path: src/config.py
+      hash: md5
+      md5: e0035719cd0c82ae0624b69cf58002ec
+      size: 1392
+    - path: src/features/window_generator.py
+      hash: md5
+      md5: c6641a63c17b13b343b08a5f7d68ee8d
+      size: 13707
     - path: src/models/train_model.py
       hash: md5
       md5: 26c5ee1211970a9672e3aac68addc9f4
@@ -92,9 +100,129 @@ stages:
       size: 77
     - path: models/saved_model/weight/checkpoint.data-00000-of-00001
       hash: md5
-      md5: 4ea1b9c86654f3442803f8945f5bcdda
-      size: 676999
+      md5: cda863b1d5f816e583660f8aa817df71
+      size: 677768
     - path: models/saved_model/weight/checkpoint.index
       hash: md5
-      md5: 95dac79793c92ac664e2a21cea6928af
+      md5: 18def42c341fdc9a87874592796f5497
       size: 3112
+  evaluate_validation:
+    cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv
+      models/saved_model/weight/ reports/validation_metric/average_metric.json reports/validation_metric/metric_all_window.csv
+    deps:
+    - path: data/processed/data_search.csv
+      hash: md5
+      md5: 75b096fe8352045e82e0bfa4077e287a
+      size: 62325
+    - path: models/saved_model/weight/checkpoint
+      hash: md5
+      md5: 7c1a6f060d24ebb29b6de8f46215368b
+      size: 77
+    - path: models/saved_model/weight/checkpoint.data-00000-of-00001
+      hash: md5
+      md5: cda863b1d5f816e583660f8aa817df71
+      size: 677768
+    - path: models/saved_model/weight/checkpoint.index
+      hash: md5
+      md5: 18def42c341fdc9a87874592796f5497
+      size: 3112
+    - path: src/config.py
+      hash: md5
+      md5: e0035719cd0c82ae0624b69cf58002ec
+      size: 1392
+    - path: src/features/window_generator.py
+      hash: md5
+      md5: c6641a63c17b13b343b08a5f7d68ee8d
+      size: 13707
+    - path: src/func.py
+      hash: md5
+      md5: 4da6cc568cb1e3b0fc721c61054cc720
+      size: 339
+    - path: src/models/evaluate_validation.py
+      hash: md5
+      md5: 7d1c2f387fa1227abb7de13d374e9353
+      size: 3007
+    - path: src/visualization/calculate_metrics.py
+      hash: md5
+      md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
+      size: 1899
+    - path: src/visualization/plot_window.py
+      hash: md5
+      md5: 432bb6e118908cebc5112e14a9063b59
+      size: 5145
+    params:
+      params.yaml:
+        train.batch_size: 32
+        train.n_future: 20
+        train.num_hidden_state: 64
+        train.seed: 0
+        train.window_size: 90
+    outs:
+    - path: reports/validation_metric/average_metric.json
+      hash: md5
+      md5: c7ac87f0ecbd161f75a84056d2a03e43
+      size: 66
+    - path: reports/validation_metric/metric_all_window.csv
+      hash: md5
+      md5: 93049fba59720741676f605d875df90d
+      size: 3090
+  evaluate_test:
+    cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/weight/
+      reports/test_metric/average_metric.json reports/test_metric/metric_all_window.csv
+    deps:
+    - path: data/processed/data_search.csv
+      hash: md5
+      md5: 75b096fe8352045e82e0bfa4077e287a
+      size: 62325
+    - path: models/saved_model/weight/checkpoint
+      hash: md5
+      md5: 7c1a6f060d24ebb29b6de8f46215368b
+      size: 77
+    - path: models/saved_model/weight/checkpoint.data-00000-of-00001
+      hash: md5
+      md5: cda863b1d5f816e583660f8aa817df71
+      size: 677768
+    - path: models/saved_model/weight/checkpoint.index
+      hash: md5
+      md5: 18def42c341fdc9a87874592796f5497
+      size: 3112
+    - path: src/config.py
+      hash: md5
+      md5: e0035719cd0c82ae0624b69cf58002ec
+      size: 1392
+    - path: src/features/window_generator.py
+      hash: md5
+      md5: c6641a63c17b13b343b08a5f7d68ee8d
+      size: 13707
+    - path: src/func.py
+      hash: md5
+      md5: 4da6cc568cb1e3b0fc721c61054cc720
+      size: 339
+    - path: src/models/evaluate_test.py
+      hash: md5
+      md5: 729dc808c69dea14ccbdcb6916dab760
+      size: 2834
+    - path: src/visualization/calculate_metrics.py
+      hash: md5
+      md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
+      size: 1899
+    - path: src/visualization/plot_window.py
+      hash: md5
+      md5: 432bb6e118908cebc5112e14a9063b59
+      size: 5145
+    params:
+      params.yaml:
+        train.batch_size: 32
+        train.n_future: 20
+        train.num_hidden_state: 64
+        train.seed: 0
+        train.window_size: 90
+    outs:
+    - path: reports/test_metric/average_metric.json
+      hash: md5
+      md5: 31dcd0a7fc90c2ad4b3a486616998edf
+      size: 64
+    - path: reports/test_metric/metric_all_window.csv
+      hash: md5
+      md5: a57e68b48519fcb1fbaad009f52f7f18
+      size: 996

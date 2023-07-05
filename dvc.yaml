@@ -31,6 +31,8 @@ stages:
     deps:
       - data/processed/data_search.csv
       - src/models/train_model.py
+      - src/features/window_generator.py
+      - src/config.py
       - models/attention_decoder.py
       - models/attention_encoder.py
       - models/da_rnn_model.py
@@ -48,3 +50,66 @@ stages:
       - models/saved_model/weight/checkpoint.data-00000-of-00001
       - models/saved_model/weight/checkpoint.index
 
+  evaluate_validation:
+    cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv models/saved_model/weight/ 
+      reports/validation_metric/average_metric.json reports/validation_metric/metric_all_window.csv
+    deps:
+      - data/processed/data_search.csv
+      - models/saved_model/weight/checkpoint
+      - models/saved_model/weight/checkpoint.data-00000-of-00001
+      - models/saved_model/weight/checkpoint.index
+      - src/models/evaluate_validation.py
+      - src/config.py
+      - src/func.py
+      - src/features/window_generator.py
+      - src/visualization/calculate_metrics.py
+      - src/visualization/plot_window.py
+    params:
+      - train.window_size
+      - train.num_hidden_state
+      - train.batch_size
+      - train.seed
+      - train.n_future
+    outs:
+      - reports/validation_metric/metric_all_window.csv
+    metrics:
+      - reports/validation_metric/average_metric.json
+
+  evaluate_test:
+    cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/weight/ 
+      reports/test_metric/average_metric.json reports/test_metric/metric_all_window.csv
+    deps:
+      - data/processed/data_search.csv
+      - models/saved_model/weight/checkpoint
+      - models/saved_model/weight/checkpoint.data-00000-of-00001
+      - models/saved_model/weight/checkpoint.index
+      - src/models/evaluate_test.py
+      - src/config.py
+      - src/func.py
+      - src/features/window_generator.py
+      - src/visualization/calculate_metrics.py
+      - src/visualization/plot_window.py
+    params:
+      - train.window_size
+      - train.num_hidden_state
+      - train.batch_size
+      - train.seed
+      - train.n_future
+    outs:
+      - reports/test_metric/metric_all_window.csv
+    metrics:
+      - reports/test_metric/average_metric.json
+
+plots:
+  - validation_metric_mape:
+      y:
+        reports/validation_metric/metric_all_window.csv: [MAPE]
+  - validation_metric_rmse:
+      y:
+        reports/validation_metric/metric_all_window.csv: [RMSE]
+  - test_metric_mape:
+      y:
+        reports/test_metric/metric_all_window.csv: [MAPE]
+  - test_metric_rmse:
+      y:
+        reports/test_metric/metric_all_window.csv: [RMSE]
