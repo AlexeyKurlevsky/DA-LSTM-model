@@ -14,8 +14,6 @@ from src import (
     Config,
     seed_everything,
     WindowGenerator,
-    calc_test_metric,
-    plot_test_window,
 )
 from src.visualization.calculate_metrics import calc_validation_metric
 from src.visualization.plot_window import plot_validation_window
@@ -24,20 +22,14 @@ from src.visualization.plot_window import plot_validation_window
 @click.command()
 @click.argument("input_path", type=click.Path())
 @click.argument("model_feature_path", type=click.Path())
-@click.argument("output_metric_average", type=click.Path())
-@click.argument("output_validation_metric_all", type=click.Path())
 def evaluate_validation(
     input_path: str,
-    model_feature_path: str,
-    output_metric_average: str,
-    output_validation_metric_all: str,
+    model_feature_path: str
 ):
     """
     Function for predict values.
     :param input_path: path processed data
     :param model_feature_path: directory with model
-    :param output_metric_average: path to save average metric (JSON)
-    :param output_validation_metric_all: path to save metric on all windows (CSV)
     """
     logging.basicConfig(level=logging.INFO)
     params = yaml.safe_load(open("params.yaml"))["train"]
@@ -73,14 +65,14 @@ def evaluate_validation(
 
     logging.info("Calculate all windows metric")
     df_metric_all_window = pd.DataFrame(data={"MAPE": mape_arr, "RMSE": rmse_arr})
-    df_metric_all_window.to_csv(output_validation_metric_all, index=False)
+    df_metric_all_window.to_csv("./reports/validation_metric/metric_all_window.csv", index=False)
 
     logging.info("Calculate average window metric")
     df_average_metric = {"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}
-    with open(output_metric_average, "w") as validation_score_file:
+    with open("./reports/validation_metric/average_metric.json", "w") as validation_score_file:
         json.dump(df_average_metric, validation_score_file, indent=4)
 
-    # plot_validation_window(w_one_target, y_pred, output_figure_path)
+    plot_validation_window(w_one_target, y_pred, "./reports/figures/validation_predict_dvc.png")
 
 
 if __name__ == "__main__":

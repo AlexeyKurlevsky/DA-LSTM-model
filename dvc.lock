@@ -108,7 +108,7 @@ stages:
       size: 3112
   evaluate_validation:
     cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv
-      models/saved_model/weight/ reports/validation_metric/average_metric.json reports/validation_metric/metric_all_window.csv
+      models/saved_model/weight/
     deps:
     - path: data/processed/data_search.csv
       hash: md5
@@ -140,16 +140,16 @@ stages:
       size: 339
     - path: src/models/evaluate_validation.py
       hash: md5
-      md5: 7d1c2f387fa1227abb7de13d374e9353
-      size: 3007
+      md5: 8dabb8b4c184b193f5d72f36ae25382e
+      size: 2690
     - path: src/visualization/calculate_metrics.py
       hash: md5
       md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
       size: 1899
     - path: src/visualization/plot_window.py
       hash: md5
-      md5: 432bb6e118908cebc5112e14a9063b59
-      size: 5145
+      md5: f66fd65aa18863ffda21ebad766c166a
+      size: 5131
     params:
       params.yaml:
         train.batch_size: 32
@@ -168,7 +168,6 @@ stages:
       size: 3090
   evaluate_test:
     cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/weight/
-      reports/test_metric/average_metric.json reports/test_metric/metric_all_window.csv
     deps:
     - path: data/processed/data_search.csv
       hash: md5
@@ -200,16 +199,16 @@ stages:
       size: 339
     - path: src/models/evaluate_test.py
       hash: md5
-      md5: 729dc808c69dea14ccbdcb6916dab760
-      size: 2834
+      md5: ff28f57a903d40059531313cebd8349e
+      size: 2621
     - path: src/visualization/calculate_metrics.py
       hash: md5
       md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
       size: 1899
     - path: src/visualization/plot_window.py
       hash: md5
-      md5: 432bb6e118908cebc5112e14a9063b59
-      size: 5145
+      md5: f66fd65aa18863ffda21ebad766c166a
+      size: 5131
     params:
       params.yaml:
         train.batch_size: 32

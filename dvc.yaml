@@ -51,8 +51,7 @@ stages:
       - models/saved_model/weight/checkpoint.index
 
   evaluate_validation:
-    cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv models/saved_model/weight/ 
-      reports/validation_metric/average_metric.json reports/validation_metric/metric_all_window.csv
+    cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv models/saved_model/weight/
     deps:
       - data/processed/data_search.csv
       - models/saved_model/weight/checkpoint
@@ -76,8 +75,7 @@ stages:
       - reports/validation_metric/average_metric.json
 
   evaluate_test:
-    cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/weight/ 
-      reports/test_metric/average_metric.json reports/test_metric/metric_all_window.csv
+    cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/weight/
     deps:
       - data/processed/data_search.csv
       - models/saved_model/weight/checkpoint

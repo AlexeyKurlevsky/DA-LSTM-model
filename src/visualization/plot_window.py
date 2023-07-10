@@ -73,7 +73,7 @@ def plot_validation_window(window: Any, y_pred: Any, save_plot_path: str) -> Non
         ax[ind].tick_params(axis="x", labelrotation=45)
         ax[ind].grid()
         ax[ind].legend()
-    plt.savefig(f"./{save_plot_path}")
+    plt.savefig(save_plot_path)
 
 
 def plot_test_window(window: Any, y_pred: Any, save_plot_path: str) -> None:
@@ -141,4 +141,4 @@ def plot_test_window(window: Any, y_pred: Any, save_plot_path: str) -> None:
         ax[ind].tick_params(axis="x", labelrotation=45)
         ax[ind].grid()
         ax[ind].legend()
-    plt.savefig(f"./{save_plot_path}")
+    plt.savefig(save_plot_path)
