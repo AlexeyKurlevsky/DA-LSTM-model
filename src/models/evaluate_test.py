@@ -2,6 +2,7 @@ import json
 import logging
 
 import click
+import mlflow
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -56,19 +57,36 @@ def evaluate_test(
 
     X_train, y_train, X_val, y_val, X_test, y_test = w_one_target.get_data_to_model()
     logging.info("Predict interval")
-    y_pred = da_model.predict_interval(X_test, w_one_target.conf.n_future)
-    mape_arr, rmse_arr = calc_test_metric(w_one_target, y_pred)
 
-    logging.info("Calculate all windows metric")
-    df_metric_all_window = pd.DataFrame(data={"MAPE": mape_arr, "RMSE": rmse_arr})
-    df_metric_all_window.to_csv("./reports/test_metric/metric_all_window.csv", index=False)
+    mlflow.set_experiment("evaluate test")
+    with mlflow.start_run():
+        y_pred = da_model.predict_interval(X_test, w_one_target.conf.n_future)
+        mape_arr, rmse_arr = calc_test_metric(w_one_target, y_pred)
 
-    logging.info("Calculate average window metric")
-    df_average_metric = {"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}
-    with open("./reports/test_metric/average_metric.json", "w") as validation_score_file:
-        json.dump(df_average_metric, validation_score_file, indent=4)
+        logging.info("Calculate all windows metric")
+        df_metric_all_window = pd.DataFrame(data={"MAPE": mape_arr, "RMSE": rmse_arr})
+        df_metric_all_window.to_csv(
+            "./reports/test_metric/metric_all_window.csv", index=False
+        )
 
-    plot_test_window(w_one_target, y_pred, "./reports/figures/test_predict_dvc.png")
+        logging.info("Calculate average window metric")
+        df_average_metric = {"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}
+        with open(
+            "./reports/test_metric/average_metric.json", "w"
+        ) as validation_score_file:
+            json.dump(df_average_metric, validation_score_file, indent=4)
+        # Log params
+        mlflow.log_params(params)
+        # Log data
+        mlflow.log_artifact(input_path)
+        # Log metric
+        mlflow.log_metric("rmse", np.average(rmse_arr))
+        mlflow.log_metric("mape", np.average(mape_arr))
+        # Log figure
+        figure = plot_test_window(
+            w_one_target, y_pred, "./reports/figures/test_predict_dvc.png"
+        )
+        mlflow.log_figure(figure, "./reports/figures/test_predict_dvc.png")
 
 
 if __name__ == "__main__":

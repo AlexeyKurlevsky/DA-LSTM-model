@@ -5,13 +5,13 @@ from matplotlib import dates
 from typing import Any
 
 
-def plot_validation_window(window: Any, y_pred: Any, save_plot_path: str) -> None:
+def plot_validation_window(window: Any, y_pred: Any, save_plot_path: str) -> Any:
     """
     Plot 4 validation window
     :param window: class window generator
     :param y_pred: predicted validation value
     :param save_plot_path: path to save figure
-    :return:
+    :return: figure
     """
     fig, ax = plt.subplots(2, 2, figsize=(20, 15))
     ax = ax.ravel()
@@ -19,7 +19,7 @@ def plot_validation_window(window: Any, y_pred: Any, save_plot_path: str) -> Non
     df_scaled = window.get_standard_data()
     X_train, y_train, X_val, y_val, X_test, y_test = window.get_data_to_model()
     df_val = df_scaled.iloc[
-        window.conf.train_split - window.conf.window_size:window.conf.val_split, :
+        window.conf.train_split - window.conf.window_size : window.conf.val_split, :
     ]
     date_val = df_val.index.values
     for ind, val in enumerate(window_list):
@@ -29,7 +29,7 @@ def plot_validation_window(window: Any, y_pred: Any, save_plot_path: str) -> Non
         )
         y_based_pred = window.scaler.inverse_transform(X_val[val, :, :])
         ax[ind].plot(
-            date_val[val:val + window.conf.window_size],
+            date_val[val : val + window.conf.window_size],
             y_based_pred[:, -1],
             color="cornflowerblue",
         )
@@ -47,7 +47,7 @@ def plot_validation_window(window: Any, y_pred: Any, save_plot_path: str) -> Non
         ax[ind].plot(
             date_val[
                 val
-                + window.conf.window_size: val
+                + window.conf.window_size : val
                 + window.conf.window_size
                 + window.conf.n_future
             ],
@@ -74,14 +74,16 @@ def plot_validation_window(window: Any, y_pred: Any, save_plot_path: str) -> Non
         ax[ind].grid()
         ax[ind].legend()
     plt.savefig(save_plot_path)
+    return fig
 
 
-def plot_test_window(window: Any, y_pred: Any, save_plot_path: str) -> None:
+def plot_test_window(window: Any, y_pred: Any, save_plot_path: str) -> Any:
     """
     Plot 2 test window
     :param window: class window generator
     :param y_pred: predicted test value
     :param save_plot_path: path to save figure
+    :return: figure
     """
     fig, ax = plt.subplots(1, 2, figsize=(20, 10))
     ax = ax.ravel()
@@ -142,3 +144,4 @@ def plot_test_window(window: Any, y_pred: Any, save_plot_path: str) -> None:
         ax[ind].grid()
         ax[ind].legend()
     plt.savefig(save_plot_path)
+    return fig

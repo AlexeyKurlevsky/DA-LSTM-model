@@ -47,7 +47,11 @@ def train_model(input_path: str, output_model_path: str) -> None:
     train_data_multi, val_data_multi = w_all_features.get_tensor_data()
 
     logging.info("Initialize model")
-    da_model = DualAttentionRNN(decoder_num_hidden=params["num_hidden_state"], encoder_num_hidden=params["num_hidden_state"], conf=conf)
+    da_model = DualAttentionRNN(
+        decoder_num_hidden=params["num_hidden_state"],
+        encoder_num_hidden=params["num_hidden_state"],
+        conf=conf,
+    )
     early_stopping = EarlyStopping(
         monitor="val_loss", patience=conf.patience, mode="min"
     )

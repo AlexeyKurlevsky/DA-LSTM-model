@@ -81,8 +81,8 @@ stages:
       size: 13707
     - path: src/models/train_model.py
       hash: md5
-      md5: 26c5ee1211970a9672e3aac68addc9f4
-      size: 2606
+      md5: eadb224b41bbed4f4a8b2f36a654e3e5
+      size: 2637
     params:
       params.yaml:
         train.batch_size: 32
@@ -140,16 +140,16 @@ stages:
       size: 339
     - path: src/models/evaluate_validation.py
       hash: md5
-      md5: 8dabb8b4c184b193f5d72f36ae25382e
-      size: 2690
+      md5: 3051f3d8507404f75a206498b871804b
+      size: 3236
     - path: src/visualization/calculate_metrics.py
       hash: md5
       md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
       size: 1899
     - path: src/visualization/plot_window.py
       hash: md5
-      md5: f66fd65aa18863ffda21ebad766c166a
-      size: 5131
+      md5: 5aa800450dc678014988cad9b0e8a5a6
+      size: 5191
     params:
       params.yaml:
         train.batch_size: 32
@@ -199,16 +199,16 @@ stages:
       size: 339
     - path: src/models/evaluate_test.py
       hash: md5
-      md5: ff28f57a903d40059531313cebd8349e
-      size: 2621
+      md5: d3337380975a90063b38b9611656ea09
+      size: 3166
     - path: src/visualization/calculate_metrics.py
       hash: md5
       md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
       size: 1899
     - path: src/visualization/plot_window.py
       hash: md5
-      md5: f66fd65aa18863ffda21ebad766c166a
-      size: 5131
+      md5: 5aa800450dc678014988cad9b0e8a5a6
+      size: 5191
     params:
       params.yaml:
         train.batch_size: 32

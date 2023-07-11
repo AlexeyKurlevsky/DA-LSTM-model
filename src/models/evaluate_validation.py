@@ -2,6 +2,7 @@ import json
 import logging
 
 import click
+import mlflow
 import pandas as pd
 import numpy as np
 import tensorflow as tf
@@ -22,10 +23,7 @@ from src.visualization.plot_window import plot_validation_window
 @click.command()
 @click.argument("input_path", type=click.Path())
 @click.argument("model_feature_path", type=click.Path())
-def evaluate_validation(
-    input_path: str,
-    model_feature_path: str
-):
+def evaluate_validation(input_path: str, model_feature_path: str):
     """
     Function for predict values.
     :param input_path: path processed data
@@ -60,19 +58,37 @@ def evaluate_validation(
 
     X_train, y_train, X_val, y_val, X_test, y_test = w_one_target.get_data_to_model()
     logging.info("Predict interval")
-    y_pred = da_model.predict_interval(X_val, w_one_target.conf.n_future)
-    mape_arr, rmse_arr = calc_validation_metric(w_one_target, y_pred)
 
-    logging.info("Calculate all windows metric")
-    df_metric_all_window = pd.DataFrame(data={"MAPE": mape_arr, "RMSE": rmse_arr})
-    df_metric_all_window.to_csv("./reports/validation_metric/metric_all_window.csv", index=False)
+    mlflow.set_experiment("evaluate validation")
+    with mlflow.start_run():
+        y_pred = da_model.predict_interval(X_val, w_one_target.conf.n_future)
+        mape_arr, rmse_arr = calc_validation_metric(w_one_target, y_pred)
 
-    logging.info("Calculate average window metric")
-    df_average_metric = {"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}
-    with open("./reports/validation_metric/average_metric.json", "w") as validation_score_file:
-        json.dump(df_average_metric, validation_score_file, indent=4)
+        logging.info("Calculate all windows metric")
+        df_metric_all_window = pd.DataFrame(data={"MAPE": mape_arr, "RMSE": rmse_arr})
+        df_metric_all_window.to_csv(
+            "./reports/validation_metric/metric_all_window.csv", index=False
+        )
 
-    plot_validation_window(w_one_target, y_pred, "./reports/figures/validation_predict_dvc.png")
+        logging.info("Calculate average window metric")
+        df_average_metric = {"MAPE": np.average(mape_arr), "RMSE": np.average(rmse_arr)}
+        with open(
+            "./reports/validation_metric/average_metric.json", "w"
+        ) as validation_score_file:
+            json.dump(df_average_metric, validation_score_file, indent=4)
+
+        figure = plot_validation_window(
+            w_one_target, y_pred, "./reports/figures/validation_predict_dvc.png"
+        )
+        # Log params
+        mlflow.log_params(params)
+        # Log data
+        mlflow.log_artifact(input_path)
+        # Log metric
+        mlflow.log_metric("rmse", np.average(rmse_arr))
+        mlflow.log_metric("mape", np.average(mape_arr))
+        # Log plot
+        mlflow.log_figure(figure, "./reports/figures/validation_predict_dvc.png")
 
 
 if __name__ == "__main__":
