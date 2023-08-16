@@ -1,0 +1,227 @@
+schema: '2.0'
+stages:
+  first_handle_data:
+    cmd: python3 -m src.data.read_data data/raw/data_yandex.csv data/interim/data_first_handle.csv
+    deps:
+    - path: data/raw/data_yandex.csv
+      hash: md5
+      md5: 0e9cfe7989fec0aad151fcd82116489b
+      size: 64732
+    - path: src/data/read_data.py
+      hash: md5
+      md5: 132aed3cc7852a24ae23d67ce36c2da2
+      size: 1416
+    outs:
+    - path: data/interim/data_first_handle.csv
+      hash: md5
+      md5: 81487c22dbeab64ff0aa901067b3a047
+      size: 129916
+  calc_hdb:
+    cmd: python3 -m src.data.calculate_hdb data/interim/data_first_handle.csv data/interim/data_with_hdb.csv
+    deps:
+    - path: data/interim/data_first_handle.csv
+      hash: md5
+      md5: 81487c22dbeab64ff0aa901067b3a047
+      size: 129916
+    - path: src/data/calculate_hdb.py
+      hash: md5
+      md5: 408c6da46914c2f506164f56c950da44
+      size: 1080
+    outs:
+    - path: data/interim/data_with_hdb.csv
+      hash: md5
+      md5: 04c9a433646dee80a16c8644476cff7a
+      size: 135034
+  calc_freq_components:
+    cmd: python3 -m src.features.get_freq_components data/interim/data_with_hdb.csv
+      data/processed/data_search.csv
+    deps:
+    - path: data/interim/data_with_hdb.csv
+      hash: md5
+      md5: 04c9a433646dee80a16c8644476cff7a
+      size: 135034
+    - path: src/features/get_freq_components.py
+      hash: md5
+      md5: 7a250560830ca5b5b8e215a03a1c984c
+      size: 1694
+    params:
+      params.yaml:
+        data_feature.day_freq: 210
+    outs:
+    - path: data/processed/data_search.csv
+      hash: md5
+      md5: 75b096fe8352045e82e0bfa4077e287a
+      size: 62325
+  train_model:
+    cmd: python3 -m src.models.train_model data/processed/data_search.csv models/saved_model/weight
+    deps:
+    - path: data/processed/data_search.csv
+      hash: md5
+      md5: 75b096fe8352045e82e0bfa4077e287a
+      size: 62325
+    - path: models/attention_decoder.py
+      hash: md5
+      md5: 7b1cfc4a57cbdeb127a561d02f7f0c9c
+      size: 1673
+    - path: models/attention_encoder.py
+      hash: md5
+      md5: 8f86568786b0ef97db043bdd1d632d75
+      size: 1560
+    - path: models/da_rnn_model.py
+      hash: md5
+      md5: 19739b7d384316c8b959b6abfc1775fa
+      size: 7122
+    - path: src/config.py
+      hash: md5
+      md5: e0035719cd0c82ae0624b69cf58002ec
+      size: 1392
+    - path: src/features/window_generator.py
+      hash: md5
+      md5: c6641a63c17b13b343b08a5f7d68ee8d
+      size: 13707
+    - path: src/models/train_model.py
+      hash: md5
+      md5: eadb224b41bbed4f4a8b2f36a654e3e5
+      size: 2637
+    params:
+      params.yaml:
+        train.batch_size: 32
+        train.max_epochs: 1
+        train.num_hidden_state: 64
+        train.patience: 10
+        train.seed: 0
+        train.steps_per_epoch: 10
+        train.validation_steps: 5
+        train.window_size: 90
+    outs:
+    - path: models/saved_model/weight/checkpoint
+      hash: md5
+      md5: 7c1a6f060d24ebb29b6de8f46215368b
+      size: 77
+    - path: models/saved_model/weight/checkpoint.data-00000-of-00001
+      hash: md5
+      md5: cda863b1d5f816e583660f8aa817df71
+      size: 677768
+    - path: models/saved_model/weight/checkpoint.index
+      hash: md5
+      md5: 18def42c341fdc9a87874592796f5497
+      size: 3112
+  evaluate_validation:
+    cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv
+      models/saved_model/weight/
+    deps:
+    - path: data/processed/data_search.csv
+      hash: md5
+      md5: 75b096fe8352045e82e0bfa4077e287a
+      size: 62325
+    - path: models/saved_model/weight/checkpoint
+      hash: md5
+      md5: 7c1a6f060d24ebb29b6de8f46215368b
+      size: 77
+    - path: models/saved_model/weight/checkpoint.data-00000-of-00001
+      hash: md5
+      md5: cda863b1d5f816e583660f8aa817df71
+      size: 677768
+    - path: models/saved_model/weight/checkpoint.index
+      hash: md5
+      md5: 18def42c341fdc9a87874592796f5497
+      size: 3112
+    - path: src/config.py
+      hash: md5
+      md5: e0035719cd0c82ae0624b69cf58002ec
+      size: 1392
+    - path: src/features/window_generator.py
+      hash: md5
+      md5: c6641a63c17b13b343b08a5f7d68ee8d
+      size: 13707
+    - path: src/func.py
+      hash: md5
+      md5: 4da6cc568cb1e3b0fc721c61054cc720
+      size: 339
+    - path: src/models/evaluate_validation.py
+      hash: md5
+      md5: 3051f3d8507404f75a206498b871804b
+      size: 3236
+    - path: src/visualization/calculate_metrics.py
+      hash: md5
+      md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
+      size: 1899
+    - path: src/visualization/plot_window.py
+      hash: md5
+      md5: 5aa800450dc678014988cad9b0e8a5a6
+      size: 5191
+    params:
+      params.yaml:
+        train.batch_size: 32
+        train.n_future: 20
+        train.num_hidden_state: 64
+        train.seed: 0
+        train.window_size: 90
+    outs:
+    - path: reports/validation_metric/average_metric.json
+      hash: md5
+      md5: c7ac87f0ecbd161f75a84056d2a03e43
+      size: 66
+    - path: reports/validation_metric/metric_all_window.csv
+      hash: md5
+      md5: 93049fba59720741676f605d875df90d
+      size: 3090
+  evaluate_test:
+    cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/weight/
+    deps:
+    - path: data/processed/data_search.csv
+      hash: md5
+      md5: 75b096fe8352045e82e0bfa4077e287a
+      size: 62325
+    - path: models/saved_model/weight/checkpoint
+      hash: md5
+      md5: 7c1a6f060d24ebb29b6de8f46215368b
+      size: 77
+    - path: models/saved_model/weight/checkpoint.data-00000-of-00001
+      hash: md5
+      md5: cda863b1d5f816e583660f8aa817df71
+      size: 677768
+    - path: models/saved_model/weight/checkpoint.index
+      hash: md5
+      md5: 18def42c341fdc9a87874592796f5497
+      size: 3112
+    - path: src/config.py
+      hash: md5
+      md5: e0035719cd0c82ae0624b69cf58002ec
+      size: 1392
+    - path: src/features/window_generator.py
+      hash: md5
+      md5: c6641a63c17b13b343b08a5f7d68ee8d
+      size: 13707
+    - path: src/func.py
+      hash: md5
+      md5: 4da6cc568cb1e3b0fc721c61054cc720
+      size: 339
+    - path: src/models/evaluate_test.py
+      hash: md5
+      md5: d3337380975a90063b38b9611656ea09
+      size: 3166
+    - path: src/visualization/calculate_metrics.py
+      hash: md5
+      md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
+      size: 1899
+    - path: src/visualization/plot_window.py
+      hash: md5
+      md5: 5aa800450dc678014988cad9b0e8a5a6
+      size: 5191
+    params:
+      params.yaml:
+        train.batch_size: 32
+        train.n_future: 20
+        train.num_hidden_state: 64
+        train.seed: 0
+        train.window_size: 90
+    outs:
+    - path: reports/test_metric/average_metric.json
+      hash: md5
+      md5: 31dcd0a7fc90c2ad4b3a486616998edf
+      size: 64
+    - path: reports/test_metric/metric_all_window.csv
+      hash: md5
+      md5: a57e68b48519fcb1fbaad009f52f7f18
+      size: 996

@@ -1,3 +1,5 @@
+import logging
+
 import click
 import pandas as pd
 
@@ -11,9 +13,13 @@ def read_data(input_path: str, output_path: str) -> None:
     :param input_path: path containing raw data
     :param output_path: first handle data
     """
+    logging.basicConfig(level=logging.INFO)
     df = pd.read_csv(input_path, sep=";")
+    logging.info("Data read")
+
     df.reset_index(drop=True, inplace=True)
     df["DateTime"] = pd.to_datetime(df["DateTime"], format="%Y-%m-%d %H:%M:%S")
+    logging.info("Date parsing done")
     df.rename(columns={"DateTime": "Дата", "Заражений": "Выявлено всего"}, inplace=True)
 
     df["% Выздоровлений"] = df["Выздоровлений"].pct_change()
@@ -24,6 +30,7 @@ def read_data(input_path: str, output_path: str) -> None:
     df["Выздоровевших и умерших"] = df["Выздоровевших и умерших"]
 
     df.to_csv(output_path, index=False)
+    logging.info("Initial data processing completed")
 
 
 if __name__ == "__main__":

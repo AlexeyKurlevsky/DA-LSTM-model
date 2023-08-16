@@ -1,6 +1,7 @@
 import click
 import pandas as pd
 import numpy as np
+import logging
 
 
 @click.command()
@@ -12,7 +13,9 @@ def calculate_hdb(input_path: str, output_path: str) -> None:
     :param input_path: Dataframe
     :param output_path:
     """
+    logging.basicConfig(level=logging.INFO)
     df = pd.read_csv(input_path, parse_dates=["Дата"])
+    logging.info("Data read")
     n = df.shape[0]
     hdb = np.zeros(n)
     for index_recover in range(n):
@@ -25,6 +28,7 @@ def calculate_hdb(input_path: str, output_path: str) -> None:
 
     df["Характерстика ДБ"] = hdb
     df.to_csv(output_path, index=False)
+    logging.info("HDB calculated")
 
 
 if __name__ == "__main__":
