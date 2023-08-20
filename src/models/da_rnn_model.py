@@ -3,8 +3,8 @@ import numpy as np
 
 from typing import Any
 from keras.layers import Dense
-from models.attention_decoder import AttentionDecoder
-from models.attention_encoder import AttentionEncoder
+from src.models.attention_decoder import AttentionDecoder
+from src.models.attention_encoder import AttentionEncoder
 
 tf.config.run_functions_eagerly(True)
 

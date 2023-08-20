@@ -7,17 +7,17 @@ import yaml
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler
 
-from models import DualAttentionRNN
 from src import (
     seed_everything,
     Config,
     WindowGenerator,
 )
+from src.models.da_rnn_model import DualAttentionRNN
 
 
 @click.command()
-@click.argument("input_path", type=click.Path())
-@click.argument("output_model_path", type=click.Path())
+@click.argument("input_path", type=click.Path(), default="./data/processed/data_search.csv")
+@click.argument("output_model_path", type=click.Path(), default="./models/saved_model/weight")
 def train_model(input_path: str, output_model_path: str) -> None:
     """
     Function for train model. When training, the EarlyStopping method is used.
