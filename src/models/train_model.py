@@ -77,6 +77,9 @@ def train_model(input_path: str, output_model_path: str) -> None:
         validation_steps=conf.validation_steps,
     )
 
+    da_model.load_weights(checkpoint_filepath)
+    da_model.save(f"./{output_model_path}/my_model")
+
 
 if __name__ == "__main__":
     train_model()

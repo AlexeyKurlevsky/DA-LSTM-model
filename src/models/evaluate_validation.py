@@ -10,19 +10,19 @@ import yaml
 
 from sklearn.preprocessing import MinMaxScaler
 
-from models import DualAttentionRNN
 from src import (
     Config,
     seed_everything,
     WindowGenerator,
 )
+from src.models.da_rnn_model import DualAttentionRNN
 from src.visualization.calculate_metrics import calc_validation_metric
 from src.visualization.plot_window import plot_validation_window
 
 
 @click.command()
-@click.argument("input_path", type=click.Path())
-@click.argument("model_feature_path", type=click.Path())
+@click.argument("input_path", type=click.Path(), default="./data/processed/data_search.csv")
+@click.argument("model_feature_path", type=click.Path(), default="./models/saved_model/weight/")
 def evaluate_validation(input_path: str, model_feature_path: str):
     """
     Function for predict values.

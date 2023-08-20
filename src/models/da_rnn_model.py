@@ -6,7 +6,8 @@ from keras.layers import Dense
 from src.models.attention_decoder import AttentionDecoder
 from src.models.attention_encoder import AttentionEncoder
 
-tf.config.run_functions_eagerly(True)
+# For debug
+# tf.config.run_functions_eagerly(True)
 
 
 def _initialize_hidden_state(inputs: tf.Tensor, num_hidden: int):
@@ -14,8 +15,8 @@ def _initialize_hidden_state(inputs: tf.Tensor, num_hidden: int):
     Initialize hidden state for LSTM cell
     """
     return [
-        tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
-        tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
+        tf.zeros((tf.shape(inputs)[0], num_hidden)),
+        tf.zeros((tf.shape(inputs)[0], num_hidden)),
     ]
 
 
@@ -170,3 +171,10 @@ class DualAttentionRNN(tf.keras.Model):
                 [inputs[:, 1 : self.conf.window_size, :], pred], axis=1
             )
         return predictions
+
+    def get_config(self):
+        return {
+            'encoder_num_hidden': self.encoder_num_hidden,
+            'decoder_num_hidden': self.encoder_num_hidden,
+            'conf': self.conf.__dict__,
+        }

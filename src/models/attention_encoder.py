@@ -46,3 +46,11 @@ class AttentionEncoder(Layer):
             tf.matmul(state, self.w) + tf.matmul(x_k, self.u_e)
         )
         return tf.matmul(e_k, self.v_e)
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'encoder_num_hidden': self.encoder_num_hidden
+        })
+        return config
+
