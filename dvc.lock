@@ -81,12 +81,12 @@ stages:
       size: 7338
     - path: src/models/train_model.py
       hash: md5
-      md5: 98638948d128672c33ef43c9cc35d1a0
-      size: 2838
+      md5: c067957d58109cd4f3e51892fc344920
+      size: 2923
     params:
       params.yaml:
         train.batch_size: 32
-        train.max_epochs: 1
+        train.max_epochs: 2
         train.num_hidden_state: 64
         train.patience: 10
         train.seed: 0
@@ -94,23 +94,23 @@ stages:
         train.validation_steps: 5
         train.window_size: 90
     outs:
-    - path: models/saved_model/checkpoint
-      hash: md5
-      md5: 7c1a6f060d24ebb29b6de8f46215368b
-      size: 77
-    - path: models/saved_model/checkpoint.data-00000-of-00001
-      hash: md5
-      md5: cda863b1d5f816e583660f8aa817df71
-      size: 677768
-    - path: models/saved_model/checkpoint.index
-      hash: md5
-      md5: 18def42c341fdc9a87874592796f5497
-      size: 3112
     - path: models/saved_model/my_model
       hash: md5
       md5: d19f0f14c0bc84f9ef16966473890d4d.dir
       size: 20796366
       nfiles: 5
+    - path: models/saved_model/weights/checkpoint
+      hash: md5
+      md5: 7c1a6f060d24ebb29b6de8f46215368b
+      size: 77
+    - path: models/saved_model/weights/checkpoint.data-00000-of-00001
+      hash: md5
+      md5: cda863b1d5f816e583660f8aa817df71
+      size: 677768
+    - path: models/saved_model/weights/checkpoint.index
+      hash: md5
+      md5: 18def42c341fdc9a87874592796f5497
+      size: 3112
   evaluate_validation:
     cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv
       models/saved_model/
@@ -119,23 +119,23 @@ stages:
       hash: md5
       md5: 75b096fe8352045e82e0bfa4077e287a
       size: 62325
-    - path: models/saved_model/checkpoint
-      hash: md5
-      md5: 7c1a6f060d24ebb29b6de8f46215368b
-      size: 77
-    - path: models/saved_model/checkpoint.data-00000-of-00001
-      hash: md5
-      md5: cda863b1d5f816e583660f8aa817df71
-      size: 677768
-    - path: models/saved_model/checkpoint.index
-      hash: md5
-      md5: 18def42c341fdc9a87874592796f5497
-      size: 3112
     - path: models/saved_model/my_model
       hash: md5
       md5: d19f0f14c0bc84f9ef16966473890d4d.dir
       size: 20796366
       nfiles: 5
+    - path: models/saved_model/weights/checkpoint
+      hash: md5
+      md5: 7c1a6f060d24ebb29b6de8f46215368b
+      size: 77
+    - path: models/saved_model/weights/checkpoint.data-00000-of-00001
+      hash: md5
+      md5: cda863b1d5f816e583660f8aa817df71
+      size: 677768
+    - path: models/saved_model/weights/checkpoint.index
+      hash: md5
+      md5: 18def42c341fdc9a87874592796f5497
+      size: 3112
     - path: src/config.py
       hash: md5
       md5: e0035719cd0c82ae0624b69cf58002ec
@@ -150,8 +150,8 @@ stages:
       size: 339
     - path: src/models/evaluate_validation.py
       hash: md5
-      md5: 94b8af4d849a0e06aa646e20769b8567
-      size: 3330
+      md5: 1aa3e68c5f4adda14d9635978eb7bdfb
+      size: 3566
     - path: src/visualization/calculate_metrics.py
       hash: md5
       md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
@@ -183,23 +183,23 @@ stages:
       hash: md5
       md5: 75b096fe8352045e82e0bfa4077e287a
       size: 62325
-    - path: models/saved_model/checkpoint
-      hash: md5
-      md5: 7c1a6f060d24ebb29b6de8f46215368b
-      size: 77
-    - path: models/saved_model/checkpoint.data-00000-of-00001
-      hash: md5
-      md5: cda863b1d5f816e583660f8aa817df71
-      size: 677768
-    - path: models/saved_model/checkpoint.index
-      hash: md5
-      md5: 18def42c341fdc9a87874592796f5497
-      size: 3112
     - path: models/saved_model/my_model
       hash: md5
       md5: d19f0f14c0bc84f9ef16966473890d4d.dir
       size: 20796366
       nfiles: 5
+    - path: models/saved_model/weights/checkpoint
+      hash: md5
+      md5: 7c1a6f060d24ebb29b6de8f46215368b
+      size: 77
+    - path: models/saved_model/weights/checkpoint.data-00000-of-00001
+      hash: md5
+      md5: cda863b1d5f816e583660f8aa817df71
+      size: 677768
+    - path: models/saved_model/weights/checkpoint.index
+      hash: md5
+      md5: 18def42c341fdc9a87874592796f5497
+      size: 3112
     - path: src/config.py
       hash: md5
       md5: e0035719cd0c82ae0624b69cf58002ec

@@ -46,18 +46,18 @@ stages:
       - train.steps_per_epoch
       - train.validation_steps
     outs:
-      - models/saved_model/checkpoint
-      - models/saved_model/checkpoint.data-00000-of-00001
-      - models/saved_model/checkpoint.index
+      - models/saved_model/weights/checkpoint
+      - models/saved_model/weights/checkpoint.data-00000-of-00001
+      - models/saved_model/weights/checkpoint.index
       - models/saved_model/my_model
 
   evaluate_validation:
     cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv models/saved_model/
     deps:
       - data/processed/data_search.csv
-      - models/saved_model/checkpoint
-      - models/saved_model/checkpoint.data-00000-of-00001
-      - models/saved_model/checkpoint.index
+      - models/saved_model/weights/checkpoint
+      - models/saved_model/weights/checkpoint.data-00000-of-00001
+      - models/saved_model/weights/checkpoint.index
       - models/saved_model/my_model
       - src/models/evaluate_validation.py
       - src/config.py
@@ -80,9 +80,9 @@ stages:
     cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/
     deps:
       - data/processed/data_search.csv
-      - models/saved_model/checkpoint
-      - models/saved_model/checkpoint.data-00000-of-00001
-      - models/saved_model/checkpoint.index
+      - models/saved_model/weights/checkpoint
+      - models/saved_model/weights/checkpoint.data-00000-of-00001
+      - models/saved_model/weights/checkpoint.index
       - models/saved_model/my_model
       - src/models/evaluate_test.py
       - src/config.py
