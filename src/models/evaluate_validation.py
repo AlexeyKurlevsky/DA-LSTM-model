@@ -22,7 +22,7 @@ from src.visualization.plot_window import plot_validation_window
 
 @click.command()
 @click.argument("input_path", type=click.Path(), default="./data/processed/data_search.csv")
-@click.argument("model_feature_path", type=click.Path(), default="./models/saved_model/weight/")
+@click.argument("model_feature_path", type=click.Path(), default="./models/saved_model/")
 def evaluate_validation(input_path: str, model_feature_path: str):
     """
     Function for predict values.
