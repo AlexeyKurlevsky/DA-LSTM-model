@@ -1,4 +1,3 @@
-/checkpoint
-/checkpoint.data-00000-of-00001
-/checkpoint.index
-/my_model
+/weights/checkpoint
+/weights/checkpoint.data-00000-of-00001
+/weights/checkpoint.index

@@ -50,9 +50,10 @@ class AttentionDecoder(Layer):
 
     def get_config(self):
         config = super().get_config().copy()
-        config.update({
-            'encoder_num_hidden': self.encoder_num_hidden,
-            'decoder_num_hidden': self.decoder_num_hidden,
-        })
+        config.update(
+            {
+                "encoder_num_hidden": self.encoder_num_hidden,
+                "decoder_num_hidden": self.decoder_num_hidden,
+            }
+        )
         return config
-
