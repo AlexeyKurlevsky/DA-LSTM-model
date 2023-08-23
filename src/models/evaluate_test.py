@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 
 import click
 import mlflow
@@ -9,6 +10,7 @@ import tensorflow as tf
 import yaml
 
 from sklearn.preprocessing import MinMaxScaler
+from dotenv import load_dotenv
 
 from src import Config, seed_everything, WindowGenerator
 from src.visualization.calculate_metrics import calc_test_metric
@@ -32,6 +34,10 @@ def evaluate_test(
     :param input_path: path processed data
     :param model_feature_path: directory with model
     """
+    load_dotenv()
+    remote_server_uri = os.getenv("MLFLOW_TRACKING_URI")
+    mlflow.set_tracking_uri(remote_server_uri)
+
     logging.basicConfig(level=logging.INFO)
     params = yaml.safe_load(open("params.yaml"))["train"]
     seed_everything(params["seed"])

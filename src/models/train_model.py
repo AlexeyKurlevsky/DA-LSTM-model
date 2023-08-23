@@ -1,10 +1,12 @@
 import logging
+import os
 import click
 import pandas as pd
 import tensorflow as tf
 import yaml
 import mlflow
 
+from dotenv import load_dotenv
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler
 
@@ -28,6 +30,10 @@ def train_model(input_path: str, output_model_path: str) -> None:
     :param input_path: path processed data
     :param output_model_path: path to save model property
     """
+    load_dotenv()
+    remote_server_uri = os.getenv("MLFLOW_TRACKING_URI")
+    mlflow.set_tracking_uri(remote_server_uri)
+
     logging.basicConfig(level=logging.DEBUG)
     params = yaml.safe_load(open("params.yaml"))["train"]
     seed_everything(params["seed"])

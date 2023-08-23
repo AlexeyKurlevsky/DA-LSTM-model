@@ -1,6 +1,6 @@
 import json
 import logging
-
+import os
 import click
 import mlflow
 import pandas as pd
@@ -8,6 +8,7 @@ import numpy as np
 import tensorflow as tf
 import yaml
 
+from dotenv import load_dotenv
 from sklearn.preprocessing import MinMaxScaler
 
 from src import (
@@ -31,6 +32,10 @@ def evaluate_validation(input_path: str, model_feature_path: str):
     :param input_path: path processed data
     :param model_feature_path: directory with model
     """
+    load_dotenv()
+    remote_server_uri = os.getenv("MLFLOW_TRACKING_URI")
+    mlflow.set_tracking_uri(remote_server_uri)
+
     logging.basicConfig(level=logging.INFO)
     params = yaml.safe_load(open("params.yaml"))["train"]
     seed_everything(params["seed"])
