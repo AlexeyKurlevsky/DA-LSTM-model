@@ -2,21 +2,13 @@ import tensorflow as tf
 import numpy as np
 
 from typing import Any
-from keras.layers import Dense
-from models.attention_decoder import AttentionDecoder
-from models.attention_encoder import AttentionEncoder
+from keras.layers import Dense, RNN
+
+from src.models.attention_decoder import AttentionDecoder
+from src.models.attention_encoder import AttentionEncoder
 
 tf.config.run_functions_eagerly(True)
-
-
-def _initialize_hidden_state(inputs: tf.Tensor, num_hidden: int):
-    """
-    Initialize hidden state for LSTM cell
-    """
-    return [
-        tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
-        tf.Variable(tf.zeros((inputs.shape[0], num_hidden))),
-    ]
+tf.data.experimental.enable_debug_mode()
 
 
 class DualAttentionRNN(tf.keras.Model):
@@ -35,8 +27,10 @@ class DualAttentionRNN(tf.keras.Model):
         self.conf = conf
         self.encoder_num_hidden = encoder_num_hidden
         self.decoder_num_hidden = decoder_num_hidden
-        self.lstm_layer_encoder = tf.keras.layers.LSTMCell(self.encoder_num_hidden)
-        self.lstm_layer_decoder = tf.keras.layers.LSTMCell(self.decoder_num_hidden)
+        self.lstm_cell_encoder = tf.keras.layers.LSTMCell(self.encoder_num_hidden)
+        self.lstm_cell_decoder = tf.keras.layers.LSTMCell(self.decoder_num_hidden)
+        self.lstm_layer_encoder = RNN(self.lstm_cell_encoder, return_state=True)
+        self.lstm_layer_decoder = RNN(self.lstm_cell_decoder, return_state=True)
         self.encoder_attn = AttentionEncoder(encoder_num_hidden=self.encoder_num_hidden)
         self.decoder_attn = AttentionDecoder(
             decoder_num_hidden=self.decoder_num_hidden,
@@ -51,7 +45,7 @@ class DualAttentionRNN(tf.keras.Model):
         :param inputs: batch with input data (batch_size, window_size, num_feature)
         :return x_encoded: encoded information (batch_size, window_size, encoder_num_hidden)
         """
-        h_n, s_n = _initialize_hidden_state(inputs, self.encoder_num_hidden)
+        h_n, s_n = self.lstm_layer_encoder.get_initial_state(inputs)
         window_size = inputs.shape[1]
         num_features = inputs.shape[2]
 
@@ -80,7 +74,7 @@ class DualAttentionRNN(tf.keras.Model):
             )  # => (batch_size, num_features)
             x_tilde = alpha * inputs[:, t, :]  # => (batch_size, num_features)
 
-            _, finale_state = self.lstm_layer_encoder(x_tilde, states=[h_n, s_n])
+            _, finale_state = self.lstm_cell_encoder(x_tilde, states=[h_n, s_n])
             h_n = finale_state[0]
             s_n = finale_state[1]
             h_encoded.append(h_n)
@@ -97,7 +91,7 @@ class DualAttentionRNN(tf.keras.Model):
         :param inputs: batch with input data (batch_size, window_size, num_feature)
         :return y_pred: predicted values
         """
-        d_n, c_n = _initialize_hidden_state(inputs, self.decoder_num_hidden)
+        d_n, c_n = self.lstm_layer_decoder.get_initial_state(inputs)
         window_size = inputs.shape[1]
         y_prev = inputs[:, :, -1]  # => (batch_size, window_size)
 
@@ -131,7 +125,7 @@ class DualAttentionRNN(tf.keras.Model):
             y_tilde = self.fc(
                 tf.concat((context, tf.expand_dims(y_prev[:, t], axis=1)), axis=1)
             )  # => (batch_size, encoder_num_hidden)
-            _, final_states = self.lstm_layer_decoder(y_tilde, states=[d_n, c_n])
+            _, final_states = self.lstm_cell_decoder(y_tilde, states=[d_n, c_n])
 
             d_n = final_states[0]
             c_n = final_states[1]
@@ -170,3 +164,10 @@ class DualAttentionRNN(tf.keras.Model):
                 [inputs[:, 1 : self.conf.window_size, :], pred], axis=1
             )
         return predictions
+
+    def get_config(self):
+        return {
+            "encoder_num_hidden": self.encoder_num_hidden,
+            "decoder_num_hidden": self.encoder_num_hidden,
+            "conf": self.conf.__dict__,
+        }

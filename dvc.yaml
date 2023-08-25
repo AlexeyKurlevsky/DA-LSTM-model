@@ -27,15 +27,15 @@ stages:
       - data/processed/data_search.csv
 
   train_model:
-    cmd: python3 -m src.models.train_model data/processed/data_search.csv models/saved_model/weight
+    cmd: python3 -m src.models.train_model data/processed/data_search.csv models/saved_model
     deps:
       - data/processed/data_search.csv
       - src/models/train_model.py
       - src/features/window_generator.py
       - src/config.py
-      - models/attention_decoder.py
-      - models/attention_encoder.py
-      - models/da_rnn_model.py
+      - src/models/attention_decoder.py
+      - src/models/attention_encoder.py
+      - src/models/da_rnn_model.py
     params:
       - train.window_size
       - train.max_epochs
@@ -46,17 +46,17 @@ stages:
       - train.steps_per_epoch
       - train.validation_steps
     outs:
-      - models/saved_model/weight/checkpoint
-      - models/saved_model/weight/checkpoint.data-00000-of-00001
-      - models/saved_model/weight/checkpoint.index
+      - models/saved_model/weights/checkpoint
+      - models/saved_model/weights/checkpoint.data-00000-of-00001
+      - models/saved_model/weights/checkpoint.index
 
   evaluate_validation:
-    cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv models/saved_model/weight/
+    cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv models/saved_model/
     deps:
       - data/processed/data_search.csv
-      - models/saved_model/weight/checkpoint
-      - models/saved_model/weight/checkpoint.data-00000-of-00001
-      - models/saved_model/weight/checkpoint.index
+      - models/saved_model/weights/checkpoint
+      - models/saved_model/weights/checkpoint.data-00000-of-00001
+      - models/saved_model/weights/checkpoint.index
       - src/models/evaluate_validation.py
       - src/config.py
       - src/func.py
@@ -75,12 +75,12 @@ stages:
       - reports/validation_metric/average_metric.json
 
   evaluate_test:
-    cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/weight/
+    cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/
     deps:
       - data/processed/data_search.csv
-      - models/saved_model/weight/checkpoint
-      - models/saved_model/weight/checkpoint.data-00000-of-00001
-      - models/saved_model/weight/checkpoint.index
+      - models/saved_model/weights/checkpoint
+      - models/saved_model/weights/checkpoint.data-00000-of-00001
+      - models/saved_model/weights/checkpoint.index
       - src/models/evaluate_test.py
       - src/config.py
       - src/func.py

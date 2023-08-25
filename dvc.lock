@@ -53,24 +53,12 @@ stages:
       md5: 75b096fe8352045e82e0bfa4077e287a
       size: 62325
   train_model:
-    cmd: python3 -m src.models.train_model data/processed/data_search.csv models/saved_model/weight
+    cmd: python3 -m src.models.train_model data/processed/data_search.csv models/saved_model
     deps:
     - path: data/processed/data_search.csv
       hash: md5
       md5: 75b096fe8352045e82e0bfa4077e287a
       size: 62325
-    - path: models/attention_decoder.py
-      hash: md5
-      md5: 7b1cfc4a57cbdeb127a561d02f7f0c9c
-      size: 1673
-    - path: models/attention_encoder.py
-      hash: md5
-      md5: 8f86568786b0ef97db043bdd1d632d75
-      size: 1560
-    - path: models/da_rnn_model.py
-      hash: md5
-      md5: 19739b7d384316c8b959b6abfc1775fa
-      size: 7122
     - path: src/config.py
       hash: md5
       md5: e0035719cd0c82ae0624b69cf58002ec
@@ -79,14 +67,26 @@ stages:
       hash: md5
       md5: c6641a63c17b13b343b08a5f7d68ee8d
       size: 13707
+    - path: src/models/attention_decoder.py
+      hash: md5
+      md5: 531d112a2bd9ef7078694e3d66b31d85
+      size: 1954
+    - path: src/models/attention_encoder.py
+      hash: md5
+      md5: df27961efa3501147b99d588cbda132b
+      size: 1725
+    - path: src/models/da_rnn_model.py
+      hash: md5
+      md5: a04a78dad298b250ce1fbac53fc6b624
+      size: 7262
     - path: src/models/train_model.py
       hash: md5
-      md5: eadb224b41bbed4f4a8b2f36a654e3e5
-      size: 2637
+      md5: 44c9c6005d2efea09726cb1fa651dad3
+      size: 4404
     params:
       params.yaml:
         train.batch_size: 32
-        train.max_epochs: 1
+        train.max_epochs: 2
         train.num_hidden_state: 64
         train.patience: 10
         train.seed: 0
@@ -94,38 +94,38 @@ stages:
         train.validation_steps: 5
         train.window_size: 90
     outs:
-    - path: models/saved_model/weight/checkpoint
+    - path: models/saved_model/weights/checkpoint
       hash: md5
       md5: 7c1a6f060d24ebb29b6de8f46215368b
       size: 77
-    - path: models/saved_model/weight/checkpoint.data-00000-of-00001
+    - path: models/saved_model/weights/checkpoint.data-00000-of-00001
       hash: md5
-      md5: cda863b1d5f816e583660f8aa817df71
-      size: 677768
-    - path: models/saved_model/weight/checkpoint.index
+      md5: acae076a6bccf29b278660f0bf9d82c8
+      size: 677071
+    - path: models/saved_model/weights/checkpoint.index
       hash: md5
-      md5: 18def42c341fdc9a87874592796f5497
-      size: 3112
+      md5: a668c45fda08d01220aaa8f661a30439
+      size: 3110
   evaluate_validation:
     cmd: python3 -m src.models.evaluate_validation data/processed/data_search.csv
-      models/saved_model/weight/
+      models/saved_model/
     deps:
     - path: data/processed/data_search.csv
       hash: md5
       md5: 75b096fe8352045e82e0bfa4077e287a
       size: 62325
-    - path: models/saved_model/weight/checkpoint
+    - path: models/saved_model/weights/checkpoint
       hash: md5
       md5: 7c1a6f060d24ebb29b6de8f46215368b
       size: 77
-    - path: models/saved_model/weight/checkpoint.data-00000-of-00001
+    - path: models/saved_model/weights/checkpoint.data-00000-of-00001
       hash: md5
-      md5: cda863b1d5f816e583660f8aa817df71
-      size: 677768
-    - path: models/saved_model/weight/checkpoint.index
+      md5: acae076a6bccf29b278660f0bf9d82c8
+      size: 677071
+    - path: models/saved_model/weights/checkpoint.index
       hash: md5
-      md5: 18def42c341fdc9a87874592796f5497
-      size: 3112
+      md5: a668c45fda08d01220aaa8f661a30439
+      size: 3110
     - path: src/config.py
       hash: md5
       md5: e0035719cd0c82ae0624b69cf58002ec
@@ -140,8 +140,8 @@ stages:
       size: 339
     - path: src/models/evaluate_validation.py
       hash: md5
-      md5: 3051f3d8507404f75a206498b871804b
-      size: 3236
+      md5: a1f053fc2aaf0af489a4a79d70c81f89
+      size: 3886
     - path: src/visualization/calculate_metrics.py
       hash: md5
       md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
@@ -167,24 +167,24 @@ stages:
       md5: 93049fba59720741676f605d875df90d
       size: 3090
   evaluate_test:
-    cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/weight/
+    cmd: python3 -m src.models.evaluate_test data/processed/data_search.csv models/saved_model/
     deps:
     - path: data/processed/data_search.csv
       hash: md5
       md5: 75b096fe8352045e82e0bfa4077e287a
       size: 62325
-    - path: models/saved_model/weight/checkpoint
+    - path: models/saved_model/weights/checkpoint
       hash: md5
       md5: 7c1a6f060d24ebb29b6de8f46215368b
       size: 77
-    - path: models/saved_model/weight/checkpoint.data-00000-of-00001
+    - path: models/saved_model/weights/checkpoint.data-00000-of-00001
       hash: md5
-      md5: cda863b1d5f816e583660f8aa817df71
-      size: 677768
-    - path: models/saved_model/weight/checkpoint.index
+      md5: acae076a6bccf29b278660f0bf9d82c8
+      size: 677071
+    - path: models/saved_model/weights/checkpoint.index
       hash: md5
-      md5: 18def42c341fdc9a87874592796f5497
-      size: 3112
+      md5: a668c45fda08d01220aaa8f661a30439
+      size: 3110
     - path: src/config.py
       hash: md5
       md5: e0035719cd0c82ae0624b69cf58002ec
@@ -199,8 +199,8 @@ stages:
       size: 339
     - path: src/models/evaluate_test.py
       hash: md5
-      md5: d3337380975a90063b38b9611656ea09
-      size: 3166
+      md5: dbd5f6a6806364007156c14aed573da7
+      size: 3817
     - path: src/visualization/calculate_metrics.py
       hash: md5
       md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
