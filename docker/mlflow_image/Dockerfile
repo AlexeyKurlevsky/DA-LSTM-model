@@ -1,4 +1,5 @@
 FROM python:3.8
 
 # Install python packages
-RUN pip install mlflow boto3 psycopg2
+COPY requirements.txt /tmp
+RUN pip install -r /tmp/requirements.txt
