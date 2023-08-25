@@ -75,7 +75,7 @@ services:
       - postgres
 
   mlflow:
-    env_file: .env
+    env_file: .env.mlflow
     restart: always
     build: ./docker/mlflow_image
     container_name: mlflow_server
