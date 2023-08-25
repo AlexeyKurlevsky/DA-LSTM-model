@@ -81,8 +81,8 @@ stages:
       size: 7262
     - path: src/models/train_model.py
       hash: md5
-      md5: 44c9c6005d2efea09726cb1fa651dad3
-      size: 4404
+      md5: 3a2db04551b339667e9616ffa09b7dfb
+      size: 4628
     params:
       params.yaml:
         train.batch_size: 32
@@ -140,8 +140,8 @@ stages:
       size: 339
     - path: src/models/evaluate_validation.py
       hash: md5
-      md5: a1f053fc2aaf0af489a4a79d70c81f89
-      size: 3886
+      md5: 98d8bc06a9f3a2e11f652cd0c7be6d1d
+      size: 4109
     - path: src/visualization/calculate_metrics.py
       hash: md5
       md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
@@ -199,8 +199,8 @@ stages:
       size: 339
     - path: src/models/evaluate_test.py
       hash: md5
-      md5: dbd5f6a6806364007156c14aed573da7
-      size: 3817
+      md5: 7090a586b6ca949495ab2f210249279a
+      size: 4035
     - path: src/visualization/calculate_metrics.py
       hash: md5
       md5: ff2db6ffcd732f6a63cb9dc4fd0ccd0d
