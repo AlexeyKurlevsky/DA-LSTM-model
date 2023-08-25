@@ -22,9 +22,7 @@ from src.visualization.plot_window import plot_validation_window
 
 
 @click.command()
-@click.argument(
-    "input_path", type=click.Path(), default="./data/processed/data_search.csv"
-)
+@click.argument("input_path", type=click.Path(), default="./data/processed/data_search.csv")
 @click.argument("model_feature_path", type=click.Path(), default="./models/saved_model")
 def evaluate_validation(input_path: str, model_feature_path: str):
     """
@@ -103,9 +101,10 @@ def evaluate_validation(input_path: str, model_feature_path: str):
         mlflow.log_figure(figure, "./reports/figures/validation_predict_dvc.png")
         # log model
         mlflow.tensorflow.log_model(
-            da_model,
-            "da_model",
+            model=da_model,
+            artifact_path="da_model",
             signature=model_signature,
+            registered_model_name="da_model",
             code_paths=[
                 "src/models/attention_decoder.py",
                 "src/models/attention_encoder.py",

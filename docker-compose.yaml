@@ -3,11 +3,13 @@ version: '3.8'
 services:
 
   minio:
-    env_file: .env
     container_name: minio
     hostname: minio
     image: minio/minio:RELEASE.2023-08-16T20-17-30Z
     command: server --console-address ":9001" /data/
+    environment:
+      - MINIO_ROOT_USER=${AWS_ACCESS_KEY_ID}
+      - MINIO_ROOT_PASSWORD=${AWS_SECRET_ACCESS_KEY}
     expose:
       - "9000"
       - "9001"
@@ -23,7 +25,10 @@ services:
 
   create_buckets:
     image: minio/mc:RELEASE.2023-08-18T21-57-55Z
-    env_file: .env
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
     networks:
       - s3
     depends_on:
@@ -51,10 +56,14 @@ services:
       - minio
 
   db:
-    env_file: .env
     container_name: postgres
     image: postgres:15.4
     restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - PGDATA=/data/postgres
     volumes:
        - postgres:/data/postgres
     ports:
@@ -63,10 +72,12 @@ services:
       - postgres
 
   pgadmin:
-    env_file: .env
     container_name: pgadmin
     image: dpage/pgadmin4:7.6
     restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
     volumes:
        - pgadmin:/var/lib/pgadmin
     ports:
@@ -75,17 +86,19 @@ services:
       - postgres
 
   mlflow:
-    env_file: .env.mlflow
     restart: always
     build: ./docker/mlflow_image
     container_name: mlflow_server
+    environment:
+      - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     ports:
       - "5000:5000"
     networks:
       - postgres
       - s3
-    entrypoint: >
-      /bin/sh -c "mlflow server --backend-store-uri postgresql://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@db/$${POSTGRES_DB} --default-artifact-root s3://$${AWS_S3_BUCKET}/ --host 0.0.0.0"
+    command: mlflow server --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB} --default-artifact-root s3://${AWS_S3_BUCKET}/ --host 0.0.0.0
 
 networks:
   s3:

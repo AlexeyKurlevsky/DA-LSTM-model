@@ -19,9 +19,7 @@ from src.models.da_rnn_model import DualAttentionRNN
 
 
 @click.command()
-@click.argument(
-    "input_path", type=click.Path(), default="./data/processed/data_search.csv"
-)
+@click.argument("input_path", type=click.Path(), default="./data/processed/data_search.csv")
 @click.argument("output_model_path", type=click.Path(), default="./models/saved_model")
 def train_model(input_path: str, output_model_path: str) -> None:
     """
@@ -121,9 +119,10 @@ def train_model(input_path: str, output_model_path: str) -> None:
         mlflow.log_artifacts(f"./{output_model_path}/weights")
         logging.info("logging model")
         mlflow.tensorflow.log_model(
-            da_model,
-            "da_model",
+            model=da_model,
+            artifact_path="da_model",
             signature=model_signature,
+            registered_model_name="da_model",
             code_paths=[
                 "src/models/attention_decoder.py",
                 "src/models/attention_encoder.py",

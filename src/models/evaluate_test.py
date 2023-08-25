@@ -19,12 +19,8 @@ from src.models.da_rnn_model import DualAttentionRNN
 
 
 @click.command()
-@click.argument(
-    "input_path", type=click.Path(), default="./data/processed/data_search.csv"
-)
-@click.argument(
-    "model_feature_path", type=click.Path(), default="./models/saved_model/"
-)
+@click.argument("input_path", type=click.Path(), default="./data/processed/data_search.csv")
+@click.argument("model_feature_path", type=click.Path(), default="./models/saved_model/")
 def evaluate_test(
     input_path: str,
     model_feature_path: str,
@@ -104,9 +100,10 @@ def evaluate_test(
         # log model
         model_signature = mlflow.models.infer_signature(X_test, y_pred)
         mlflow.tensorflow.log_model(
-            da_model,
-            "da_model",
+            model=da_model,
+            artifact_path="da_model",
             signature=model_signature,
+            registered_model_name="da_model",
             code_paths=[
                 "src/models/attention_decoder.py",
                 "src/models/attention_encoder.py",
