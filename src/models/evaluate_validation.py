@@ -16,6 +16,8 @@ from src import (
     seed_everything,
     WindowGenerator,
 )
+from src.models.attention_decoder import AttentionDecoder
+from src.models.attention_encoder import AttentionEncoder
 from src.models.da_rnn_model import DualAttentionRNN
 from src.visualization.calculate_metrics import calc_validation_metric
 from src.visualization.plot_window import plot_validation_window
@@ -94,6 +96,9 @@ def evaluate_validation(input_path: str, model_feature_path: str):
         mlflow.log_params(params)
         # Log data
         mlflow.log_artifact(input_path)
+        # Log weights
+        mlflow.log_artifact(f"./{model_feature_path}/weights", artifact_path="da_model")
+        mlflow.log_artifact("params.yaml", artifact_path="da_model")
         # Log metric
         mlflow.log_metric("rmse", np.average(rmse_arr))
         mlflow.log_metric("mape", np.average(mape_arr))
@@ -105,6 +110,10 @@ def evaluate_validation(input_path: str, model_feature_path: str):
             artifact_path="da_model",
             signature=model_signature,
             registered_model_name="da_model",
+            custom_objects={
+                "AttentionEncoder": AttentionEncoder,
+                "AttentionDecoder": AttentionDecoder,
+            },
             code_paths=[
                 "src/models/attention_decoder.py",
                 "src/models/attention_encoder.py",

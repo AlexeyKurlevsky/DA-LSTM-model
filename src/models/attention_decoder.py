@@ -3,6 +3,7 @@ import tensorflow as tf
 from keras.layers import Layer
 
 
+@tf.keras.saving.register_keras_serializable(package="attention_decoder_layer")
 class AttentionDecoder(Layer):
     def __init__(self, decoder_num_hidden=64, encoder_num_hidden=64):
         """
@@ -49,11 +50,7 @@ class AttentionDecoder(Layer):
         return tf.matmul(l_i, self.v_d)
 
     def get_config(self):
-        config = super().get_config().copy()
-        config.update(
-            {
-                "encoder_num_hidden": self.encoder_num_hidden,
-                "decoder_num_hidden": self.decoder_num_hidden,
-            }
-        )
-        return config
+        return {
+            "encoder_num_hidden": self.encoder_num_hidden,
+            "decoder_num_hidden": self.decoder_num_hidden,
+        }

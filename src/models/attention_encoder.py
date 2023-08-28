@@ -4,6 +4,7 @@ from typing import Tuple
 from keras.layers import Layer
 
 
+@tf.keras.saving.register_keras_serializable(package="attention_encoder_layer")
 class AttentionEncoder(Layer):
     def __init__(self, encoder_num_hidden: int = 64):
         """
@@ -48,6 +49,4 @@ class AttentionEncoder(Layer):
         return tf.matmul(e_k, self.v_e)
 
     def get_config(self):
-        config = super().get_config().copy()
-        config.update({"encoder_num_hidden": self.encoder_num_hidden})
-        return config
+        return {"encoder_num_hidden": self.encoder_num_hidden}
