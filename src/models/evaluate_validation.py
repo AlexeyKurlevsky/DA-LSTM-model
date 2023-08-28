@@ -110,8 +110,10 @@ def evaluate_validation(input_path: str, model_feature_path: str):
             artifact_path="da_model",
             signature=model_signature,
             registered_model_name="da_model",
-            custom_objects={"AttentionEncoder": AttentionEncoder,
-                            "AttentionDecoder": AttentionDecoder},
+            custom_objects={
+                "AttentionEncoder": AttentionEncoder,
+                "AttentionDecoder": AttentionDecoder,
+            },
             code_paths=[
                 "src/models/attention_decoder.py",
                 "src/models/attention_encoder.py",

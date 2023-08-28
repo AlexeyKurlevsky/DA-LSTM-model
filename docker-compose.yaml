@@ -100,6 +100,22 @@ services:
       - s3
     command: mlflow server --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB} --default-artifact-root s3://${AWS_S3_BUCKET}/ --host 0.0.0.0
 
+  app:
+    build: ./
+    container_name: app
+    ports:
+      - "8088:8088"
+    networks:
+      - s3
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - MLFLOW_S3_ENDPOINT_URL=http://nginx:9000
+    depends_on:
+      - minio
+      - mlflow
+
 networks:
   s3:
     driver: bridge
